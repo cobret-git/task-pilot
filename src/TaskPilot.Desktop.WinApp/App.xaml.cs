@@ -1,23 +1,12 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System.IO.Abstractions;
+using TaskPilot.Core.Components.Data;
+using TaskPilot.Core.Model;
+using TaskPilot.Core.Services;
+using TaskPilot.Desktop.WinApp.Services;
 
 namespace TaskPilot.Desktop.WinApp
 {
@@ -26,7 +15,11 @@ namespace TaskPilot.Desktop.WinApp
     /// </summary>
     public partial class App : Application
     {
+        #region Fields
         private Window? _window;
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -34,18 +27,89 @@ namespace TaskPilot.Desktop.WinApp
         /// </summary>
         public App()
         {
+            Services = ConfigureServices();
             InitializeComponent();
         }
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the current <see cref="App"/> instance in use
+        /// </summary>
+        public new static App Current => (App)Application.Current;
+
+        /// <summary>
+        /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
+        /// </summary>
+        public IServiceProvider Services { get; }
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Configures the services for the application.
+        /// </summary>
+        private static IServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection();
+
+            ConfigureDatabaseServices(services);
+
+            services.AddSingleton<IFileSystem, FileSystem>();
+            services.AddSingleton<IPathProvider, PathProvider>();
+            services.AddSingleton<LoggingService>();
+            services.AddSingleton<ITaskPilotDataService, TaskPilotDataService>();
+
+            return services.BuildServiceProvider();
+        }
+        private static void ConfigureDatabaseServices(ServiceCollection services)
+        {
+            // Database configuration
+            var dbConfig = CreateDatabaseConfiguration();
+            services.AddSingleton(dbConfig);
+
+            // DbContext factory
+            services.AddDbContextFactory<LocalDbContext>(options =>
+            {
+                options.UseSqlite(dbConfig.ToConnectionString());
+#if DEBUG
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+#endif
+            });
+        }
+        private static DatabaseConfiguration CreateDatabaseConfiguration()
+        {
+            var pathProvider = new PathProvider();
+            pathProvider.EnsureDirectoriesExist();
+            return new DatabaseConfiguration
+            {
+                DatabasePath = pathProvider.GetDataDirectoryPath(),
+                DatabaseName = "TaskPilot.db"
+            };
+        }
+        #endregion
+
+        #region Handlers
 
         /// <summary>
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            _  = Environment.CurrentDirectory;
+            // Resolve and initialize logging service
+            var loggingService = Services.GetService<LoggingService>();
+            loggingService?.Initialize();
+
+            // Initialize database before showing UI
+            var dbService = Services.GetRequiredService<ITaskPilotDataService>();
+            var result = await dbService.InitializeDatabaseAsync();
+
             _window = new MainWindow();
             _window.Activate();
         }
+        #endregion
     }
 }

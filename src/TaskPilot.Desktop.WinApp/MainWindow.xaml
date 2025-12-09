@@ -7,13 +7,44 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="TaskPilot.Desktop.WinApp">
+    Title="TaskPilot">
 
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid>
+    <Grid x:Name="gridXamlRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <TitleBar x:Name="titleBar" 
+                  Grid.Row="0" 
+                  IsBackButtonVisible="False" 
+                  Title="TaskPilot"
+                  IsPaneToggleButtonVisible="True"
+                  PaneToggleRequested="titleBar_PaneToggleRequested"/>
+
+        <NavigationView x:Name="navView"
+                        Grid.Row="1"
+                        IsSettingsVisible="True"
+                        IsBackButtonVisible="Collapsed"
+                        IsPaneToggleButtonVisible="False"
+                        SelectionChanged="navView_SelectionChanged"
+                        AlwaysShowHeader="False"
+                        Loaded="navView_Loaded">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Dashboard"/>
+                <NavigationViewItem Content="Projects"/>
+            </NavigationView.MenuItems>
+            <Frame x:Name="navFrame">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition  />
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </NavigationView>
     </Grid>
 </Window>
