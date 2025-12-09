@@ -20,10 +20,10 @@ namespace TaskPilot.Core.Components.Data
 
         /// <summary>
         /// Gets or initializes the name of the SQLite database file including extension.
-        /// Default value is "ScheduleHelper.db".
+        /// Default value is "TaskPilot.db".
         /// The file will be created at the location specified by <see cref="DatabasePath"/>.
         /// </summary>
-        public string DatabaseName { get; init; } = "ScheduleHelper.db";
+        public string DatabaseName { get; init; } = "TaskPilot.db";
 
         /// <summary>
         /// Enable SQLCipher encryption (requires SQLCipher NuGet package)
