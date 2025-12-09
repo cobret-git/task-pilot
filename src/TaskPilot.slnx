@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="TaskPilot.Core/TaskPilot.Core.csproj" />
+  <Project Path="TaskPilot.Desktop.WinApp/TaskPilot.Desktop.WinApp.csproj" Id="6cd68731-1dab-4861-a6f6-a228247f75d9">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
+</Solution>
