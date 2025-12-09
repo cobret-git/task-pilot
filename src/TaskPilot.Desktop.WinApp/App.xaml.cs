@@ -43,6 +43,7 @@ namespace TaskPilot.Desktop.WinApp
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            _  = Environment.CurrentDirectory;
             _window = new MainWindow();
             _window.Activate();
         }
