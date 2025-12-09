@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="gcb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3F7057"/>
+      <stop offset="1" stop-color="#2F5A46"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Clipboard base (expanded to use more canvas) -->
+  <rect x="0" y="5" width="48" height="43" rx="2" fill="url(#gcb)"/>
+
+  <!-- Top tabs -->
+  <rect x="6" y="0" width="12" height="12" rx="1" fill="#4C8A6C"/>
+  <rect x="30" y="0" width="12" height="12" rx="1" fill="#4C8A6C"/>
+
+  <!-- Checkmark (scaled & centered for larger board) -->
+  <path d="M15 27l8 8 14-14" stroke="#6EC2B2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
