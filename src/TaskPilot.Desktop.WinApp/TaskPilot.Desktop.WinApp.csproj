@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -40,6 +40,9 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaskPilot.Core\TaskPilot.Core.csproj" />
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -56,5 +59,7 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+    <AssemblyVersion>1.0.3.2025</AssemblyVersion>
+    <FileVersion>1.0.3.2025</FileVersion>
   </PropertyGroup>
 </Project>
