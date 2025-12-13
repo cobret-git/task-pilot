@@ -29,14 +29,14 @@
         <NavigationView x:Name="navView"
                         Grid.Row="1"
                         IsSettingsVisible="True"
-                        IsBackButtonVisible="Collapsed"
+                        IsBackButtonVisible="Visible"
                         IsPaneToggleButtonVisible="False"
                         SelectionChanged="navView_SelectionChanged"
                         AlwaysShowHeader="False"
                         Loaded="navView_Loaded">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Dashboard"/>
-                <NavigationViewItem Content="Projects"/>
+                <NavigationViewItem Content="Dashboard" Icon="Home"/>
+                <NavigationViewItemHeader Content="Projects"/>
             </NavigationView.MenuItems>
             <Frame x:Name="navFrame">
                 <Frame.ContentTransitions>
