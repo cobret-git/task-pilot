@@ -120,6 +120,15 @@ namespace TaskPilot.Core.Services
         /// <returns>A result indicating success or failure.</returns>
         Task<Result> DeleteProjectAsync(int id);
 
+        /// <summary>
+        /// Checks if a project with the specified name already exists.
+        /// Useful for real-time validation during project creation or editing.
+        /// </summary>
+        /// <param name="projectName">The project name to check.</param>
+        /// <param name="excludeProjectId">Optional project ID to exclude from the check (used when editing).</param>
+        /// <returns>A result containing true if the name exists, false otherwise.</returns>
+        Task<Result<bool>> ProjectNameExistsAsync(string projectName, int? excludeProjectId = null);
+
         #endregion
 
         #region TaskType Operations

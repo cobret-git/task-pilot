@@ -422,6 +422,41 @@ namespace TaskPilot.Core.Services
             }
         }
 
+        /// <inheritdoc/>
+        public async Task<Result<bool>> ProjectNameExistsAsync(string projectName, int? excludeProjectId = null)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(projectName))
+                {
+                    return Result<bool>.Success(false);
+                }
+
+                using var context = _contextFactory.CreateDbContext();
+
+                bool exists;
+                if (excludeProjectId.HasValue)
+                {
+                    // Exclude the specified project ID (useful when editing)
+                    exists = await context.Projects
+                        .AnyAsync(p => p.Name == projectName && p.Id != excludeProjectId.Value);
+                }
+                else
+                {
+                    // Check all projects
+                    exists = await context.Projects
+                        .AnyAsync(p => p.Name == projectName);
+                }
+
+                return Result<bool>.Success(exists);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to check if project name exists: {ProjectName}", projectName);
+                return Result<bool>.Failure($"Failed to check project name: {ex.Message}");
+            }
+        }
+
         #endregion
 
         #region TaskType Operations
