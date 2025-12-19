@@ -3,13 +3,22 @@
     x:Class="TaskPilot.Desktop.WinApp.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:TaskPilot.Desktop.WinApp">
+    xmlns:local="using:TaskPilot.Desktop.WinApp"
+    xmlns:conv="using:TaskPilot.Desktop.WinApp.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
+            <conv:HexToColorConverter x:Key="HexToColorConverter"/>
+            <conv:BoolToSortIconConverter x:Key="BoolToSortIconConverter"/>
+            <conv:BoolToSortTextConverter x:Key="BoolToSortTextConverter"/>
+            <conv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+            <conv:EnumToIntConverter x:Key="EnumToIntConverter"/>
+            <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+            <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>

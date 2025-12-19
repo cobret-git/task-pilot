@@ -19,6 +19,7 @@
   <ItemGroup>
     <None Remove="Dialogs\ProjectFormDialog.xaml" />
     <None Remove="Pages\ProjectFormPage.xaml" />
+    <None Remove="Pages\ProjectsBrowser.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,7 +52,9 @@
     <ProjectReference Include="..\TaskPilot.Core\TaskPilot.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Page Update="Pages\ProjectsBrowser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\ProjectFormPage.xaml">
@@ -79,8 +82,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.12.2025</AssemblyVersion>
-    <FileVersion>1.0.12.2025</FileVersion>
+    <AssemblyVersion>1.0.29.2025</AssemblyVersion>
+    <FileVersion>1.0.29.2025</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>

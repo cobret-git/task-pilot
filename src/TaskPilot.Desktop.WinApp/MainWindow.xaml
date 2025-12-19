@@ -36,9 +36,9 @@
                         Loaded="navView_Loaded">
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Dashboard" Icon="Home"/>
-                <NavigationViewItemHeader Content="Projects"/>
+                <NavigationViewItem Content="Projects" Tag="Projects"/>
             </NavigationView.MenuItems>
-            <Frame x:Name="navFrame">
+            <Frame x:Name="navFrame" Loaded="navFrame_Loaded">
                 <Frame.ContentTransitions>
                     <TransitionCollection>
                         <NavigationThemeTransition  />

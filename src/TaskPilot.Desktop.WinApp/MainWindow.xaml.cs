@@ -1,20 +1,13 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.ApplicationSettings;
+using TaskPilot.Core.Components.Data;
+using TaskPilot.Core.Services;
+using TaskPilot.Core.ViewModel;
+using TaskPilot.Desktop.WinApp.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,6 +21,8 @@ namespace TaskPilot.Desktop.WinApp
     {
         #region Fields
         private readonly Microsoft.UI.Windowing.AppWindow _appWindow;
+        private readonly INavigationService _navigationService;
+        private bool navigationFrameLoaded = false;
         #endregion
 
         #region Constructors
@@ -35,6 +30,7 @@ namespace TaskPilot.Desktop.WinApp
         {
             InitializeComponent();
             _appWindow = GetAppWindowForCurrentWindow();
+            _navigationService = App.Current.Services.GetRequiredService<INavigationService>();
             this.ExtendsContentIntoTitleBar = true; // Extend the content into the title bar and hide the default titlebar
             this.SetTitleBar(titleBar); // Set the custom title bar
         }
@@ -49,11 +45,25 @@ namespace TaskPilot.Desktop.WinApp
         {
             // nothing here yet
         }
-        private void navView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private async void navView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItem is not NavigationViewItem item) return;
             var tagStringVvalue = item.Tag?.ToString();
+            var request = tagStringVvalue switch
+            {
+                "Projects" => new ProjectsBrowserPageRequest(),
+                _ => null!
+            };
+            if (request == null) return;
+            await _navigationService.NavigateToAsync(request);
             // nothing here yet
+        }
+        private void navFrame_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (navigationFrameLoaded) return;
+            var navigationService = (NavigationService)_navigationService;
+            navigationService.Frame = this.navFrame;
+            navigationFrameLoaded = true;
         }
         #endregion
 
@@ -65,5 +75,7 @@ namespace TaskPilot.Desktop.WinApp
             return AppWindow.GetFromWindowId(windowId);
         }
         #endregion
+
+        
     }
 }

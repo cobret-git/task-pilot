@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="TaskPilot.Desktop.WinApp.Pages.ProjectsBrowser"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TaskPilot.Desktop.WinApp.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:entities="using:TaskPilot.Core.Components.Entities"
+    xmlns:viewmodel="using:TaskPilot.Core.ViewModel"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewmodel:ProjectsBrowserViewModel}">
+
+    <Page.Resources>
+        <!-- Project Item Template -->
+        <DataTemplate x:Key="ProjectItemTemplate" x:DataType="entities:Project">
+            <Grid Padding="12,8" Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Project Icon -->
+                <Grid Grid.Column="0" Grid.RowSpan="2" 
+                      Width="48" Height="48" 
+                      CornerRadius="8"
+                      Margin="0,0,12,0"
+                      VerticalAlignment="Center">
+                    <Grid.Background>
+                        <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}" 
+                                       Opacity="0.15"/>
+                    </Grid.Background>
+                    <FontIcon Glyph="&#xE8F1;" FontSize="24">
+                        <FontIcon.Foreground>
+                            <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}"/>
+                        </FontIcon.Foreground>
+                    </FontIcon>
+                </Grid>
+
+                <!-- Project Name -->
+                <TextBlock Grid.Column="1" Grid.Row="0"
+                          Text="{x:Bind Name}"
+                          Style="{StaticResource BodyStrongTextBlockStyle}"
+                          TextTrimming="CharacterEllipsis"
+                          ToolTipService.ToolTip="{x:Bind Name}"/>
+
+                <!-- Dates -->
+                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Spacing="16">
+                    <TextBlock Opacity="0.6">
+                        <Run Text="Created:"/>
+                        <Run Text="{x:Bind CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"/>
+                    </TextBlock>
+                    <TextBlock Opacity="0.6" Visibility="{x:Bind UpdatedAt, Converter={StaticResource NullToVisibilityConverter}}">
+                        <Run Text="Updated:"/>
+                        <Run Text="{x:Bind UpdatedAt, Converter={StaticResource DateTimeToStringConverter}}"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Archived Badge -->
+                <Border Grid.Column="2" Grid.RowSpan="2"
+                       Visibility="{x:Bind IsArchived}"
+                       Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
+                       Padding="8,4"
+                       CornerRadius="4"
+                       VerticalAlignment="Center">
+                    <TextBlock Text="Archived" 
+                              Style="{StaticResource CaptionTextBlockStyle}"
+                              Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                </Border>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Margin="36,36,36,0"
+                   VerticalAlignment="Stretch" MaxWidth="1200"
+                   Style="{StaticResource TitleTextBlockStyle}" 
+                   Text="{x:Bind ViewModel.Title}"/>
+
+        <!-- Main Container with Max Width -->
+        <ScrollViewer Grid.Row="1"
+                      HorizontalScrollBarVisibility="Disabled" 
+                      VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid MaxWidth="1200" Margin="24" RowSpacing="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Search + Create -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Sort + Filter Controls -->
+                        <RowDefinition Height="*"/>
+                        <!-- Projects List -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Row 0: Search + Create Button -->
+                    <Grid Grid.Row="0" ColumnSpacing="12"
+                          Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <AutoSuggestBox Grid.Column="0"
+                                        PlaceholderText="Search projects..."
+                                        QueryIcon="Find"
+                                        Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        VerticalAlignment="Center"/>
+
+                        <Button Grid.Column="1"
+                                Content="New Project"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Command="{x:Bind ViewModel.CreateProjectCommand}">
+                            <Button.KeyboardAccelerators>
+                                <KeyboardAccelerator Modifiers="Control" Key="N"/>
+                            </Button.KeyboardAccelerators>
+                        </Button>
+                    </Grid>
+
+                    <!-- Row 1: Sort + Filter Controls -->
+                    <Grid Grid.Row="1" ColumnSpacing="12"
+                          Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Sort By Dropdown -->
+                        <ComboBox Grid.Column="0" 
+                                  Header="Sort by"
+                                  MinWidth="150"
+                                  SelectedIndex="{x:Bind ViewModel.SortBy, Mode=TwoWay, Converter={StaticResource EnumToIntConverter}}">
+                            <ComboBoxItem Content="Name"/>
+                            <ComboBoxItem Content="Created Date"/>
+                            <ComboBoxItem Content="Updated Date"/>
+                            <ComboBoxItem Content="Custom Order"/>
+                        </ComboBox>
+
+                        <!-- Sort Direction Toggle -->
+                        <ToggleButton Grid.Column="1"
+                                      IsChecked="{x:Bind ViewModel.SortAscending, Mode=TwoWay}"
+                                      ToolTipService.ToolTip="Toggle sort direction">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="{x:Bind ViewModel.SortAscending, Mode=OneWay, Converter={StaticResource BoolToSortIconConverter}}" 
+                                          FontSize="16"/>
+                                <TextBlock Text="{x:Bind ViewModel.SortAscending, Mode=OneWay, Converter={StaticResource BoolToSortTextConverter}}"/>
+                            </StackPanel>
+                        </ToggleButton>
+
+                        <!-- Show Archived Toggle -->
+                        <CheckBox Grid.Column="3"
+                                  Content="Show archived"
+                                  IsChecked="{x:Bind ViewModel.ShowArchived, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <!-- Row 2: Projects List -->
+                    <Grid Grid.Row="2">
+                        <!-- Loading Indicator -->
+                        <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"
+                                      Width="48" Height="48"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Visibility="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
+
+                        <!-- Empty State -->
+                        <StackPanel HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    Spacing="16"
+                                    Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                            <FontIcon Glyph="&#xE8F1;" FontSize="72" Opacity="0.3"/>
+                            <TextBlock Text="No projects found" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Opacity="0.6"/>
+                            <TextBlock Text="Create your first project to get started"                                   
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Opacity="0.6"/>
+                            <Button Content="Create Project"
+                                    Command="{x:Bind ViewModel.CreateProjectCommand}"
+                                    HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Projects ListView -->
+                        <ListView ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
+                                  ItemTemplate="{StaticResource ProjectItemTemplate}"
+                                  SelectionMode="Single"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="ListView_ItemClick"
+                                  Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay}">
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Margin" Value="0,0,0,4"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <!-- Context Menu -->
+                            <ListView.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Open" 
+                                                    Icon="OpenFile"
+                                                    Command="{x:Bind ViewModel.OpenProjectCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                    <MenuFlyoutItem Text="Edit" 
+                                                    Icon="Edit"
+                                                    Command="{x:Bind ViewModel.EditProjectCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="Delete" 
+                                                    Icon="Delete"
+                                                    Command="{x:Bind ViewModel.DeleteProjectCommand}"
+                                                    CommandParameter="{Binding}">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Key="Delete"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </ListView.ContextFlyout>
+                        </ListView>
+                    </Grid>
+                </Grid>
+            </Grid>
+            
+        </ScrollViewer>
+    </Grid>
+</Page>

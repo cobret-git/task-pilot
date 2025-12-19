@@ -18,6 +18,7 @@ namespace TaskPilot.Desktop.WinApp.Services
     public class NavigationService : INavigationService
     {
         #region Fields
+        private readonly IServiceLocator _serviceLocator;
         private readonly Dictionary<Type, Type> _viewModelToPageMapping;
         #endregion
 
@@ -26,11 +27,13 @@ namespace TaskPilot.Desktop.WinApp.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService"/> class.
         /// </summary>
-        /// <param name="serviceProvider">The service provider for resolving ViewModels.</param>
-        public NavigationService(IServiceProvider serviceProvider)
+        /// <param name="serviceLocator">The service provider for resolving ViewModels.</param>
+        public NavigationService(IServiceLocator serviceLocator)
         {
+            _serviceLocator = serviceLocator;
             _viewModelToPageMapping = new Dictionary<Type, Type>()
             {
+                { typeof(ProjectsBrowserViewModel), typeof(ProjectsBrowser) },
                 { typeof(ProjectFormViewModel), typeof(ProjectFormPage) }
             };
         }
@@ -66,11 +69,6 @@ namespace TaskPilot.Desktop.WinApp.Services
         /// </summary>
         public Frame? Frame { get; set; }
 
-        /// <summary>
-        /// Gets or sets the service provider for resolving ViewModels. Must be set before navigating.
-        /// </summary>
-        public IServiceProvider? ServiceProvider { get; set; }
-
         #endregion
 
         #region Methods
@@ -88,9 +86,9 @@ namespace TaskPilot.Desktop.WinApp.Services
             try
             {
                 ArgumentNullException.ThrowIfNull(Frame);
-                ArgumentNullException.ThrowIfNull(ServiceProvider);
+                ArgumentNullException.ThrowIfNull(_serviceLocator);
 
-                var viewModel = ServiceProvider.GetService(request.ViewModelType) as IPageViewModel;
+                var viewModel = _serviceLocator.GetService(request.ViewModelType) as IPageViewModel;
 
                 if (viewModel == null)
                 {

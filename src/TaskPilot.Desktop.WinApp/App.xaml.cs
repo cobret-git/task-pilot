@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
 using System.IO.Abstractions;
 using TaskPilot.Core.Components.Data;
 using TaskPilot.Core.Model;
 using TaskPilot.Core.Services;
+using TaskPilot.Core.ViewModel;
 using TaskPilot.Desktop.WinApp.Services;
 
 namespace TaskPilot.Desktop.WinApp
@@ -27,7 +29,6 @@ namespace TaskPilot.Desktop.WinApp
         /// </summary>
         public App()
         {
-            Services = ConfigureServices();
             InitializeComponent();
         }
         #endregion
@@ -42,7 +43,7 @@ namespace TaskPilot.Desktop.WinApp
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
         /// </summary>
-        public IServiceProvider Services { get; }
+        public IServiceProvider Services { get; private set; }
         #endregion
 
         #region Methods
@@ -56,10 +57,19 @@ namespace TaskPilot.Desktop.WinApp
 
             ConfigureDatabaseServices(services);
 
+            services.AddSingleton<App>(App.Current);
+            services.AddSingleton<DispatcherQueue>(sp => DispatcherQueue.GetForCurrentThread());
             services.AddSingleton<IFileSystem, FileSystem>();
+            services.AddSingleton<IDispatcherService, DispatcherService>();
             services.AddSingleton<IPathProvider, PathProvider>();
             services.AddSingleton<LoggingService>();
             services.AddSingleton<ITaskPilotDataService, TaskPilotDataService>();
+            services.AddSingleton<IServiceLocator, ServiceLocator>();
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IDialogService, DialogService>();
+
+            services.AddTransient<ProjectsBrowserViewModel>();
+            services.AddTransient<ProjectFormViewModel>();
 
             return services.BuildServiceProvider();
         }
@@ -99,6 +109,8 @@ namespace TaskPilot.Desktop.WinApp
         /// <param name="args">Details about the launch request and process.</param>
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            Services = ConfigureServices();
+
             // Resolve and initialize logging service
             var loggingService = Services.GetService<LoggingService>();
             loggingService?.Initialize();
