@@ -9,8 +9,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="/Assets/Styles.xaml"/>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
+            
             <conv:HexToColorConverter x:Key="HexToColorConverter"/>
             <conv:BoolToSortIconConverter x:Key="BoolToSortIconConverter"/>
             <conv:BoolToSortTextConverter x:Key="BoolToSortTextConverter"/>
@@ -19,6 +21,23 @@
             <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
             <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <conv:PopupTypeToSeverityConverter x:Key="PopupTypeToSeverityConverter"/>
+
+            <FontFamily x:Key="MaterialOutlineBoldIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Bold.ttf#Material Symbols Rounded</FontFamily>
+            <FontFamily x:Key="MaterialOutlineExtraLightIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-ExtraLight.ttf#Material Symbols Rounded</FontFamily>
+            <FontFamily x:Key="MaterialOutlineLightIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Light.ttf#Material Symbols Rounded</FontFamily>
+            <FontFamily x:Key="MaterialOutlineMediumIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Medium.ttf#Material Symbols Rounded</FontFamily>
+            <FontFamily x:Key="MaterialOutlineRegularIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Regular.ttf#Material Symbols Rounded</FontFamily>
+            <FontFamily x:Key="MaterialOutlineSemiBoldIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-SemiBold.ttf#Material Symbols Rounded</FontFamily>
+            <FontFamily x:Key="MaterialOutlineThinIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Thin.ttf#Material Symbols Rounded</FontFamily>
+
+            <FontFamily x:Key="MaterialFilledBoldIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-Bold.ttf#Material Symbols Rounded Filled</FontFamily>
+            <FontFamily x:Key="MaterialFilledExtraLightIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-ExtraLight.ttf#Material Symbols Rounded Filled</FontFamily>
+            <FontFamily x:Key="MaterialFilledLightIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-Light.ttf#Material Symbols Rounded Filled</FontFamily>
+            <FontFamily x:Key="MaterialFilledMediumIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-Medium.ttf#Material Symbols Rounded Filled</FontFamily>
+            <FontFamily x:Key="MaterialFilledRegularIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-Regular.ttf#Material Symbols Rounded Filled</FontFamily>
+            <FontFamily x:Key="MaterialFilledSemiBoldIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-SemiBold.ttf#Material Symbols Rounded Filled</FontFamily>
+            <FontFamily x:Key="MaterialFilledThinIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded_Filled-Thin.ttf#Material Symbols Rounded Filled</FontFamily>
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>

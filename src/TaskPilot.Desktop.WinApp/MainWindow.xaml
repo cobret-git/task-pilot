@@ -14,6 +14,19 @@
     </Window.SystemBackdrop>
 
     <Grid x:Name="gridXamlRoot">
+        <Grid.Resources>
+            <Style x:Key="NavFontIconStyle" TargetType="FontIcon">
+                <Setter Property="FontFamily" Value="{StaticResource MaterialOutlineThinIconFontFamily}"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="RenderTransformOrigin" Value="0.5 0.5"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="2.1" ScaleY="2"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -35,8 +48,16 @@
                         AlwaysShowHeader="False"
                         Loaded="navView_Loaded">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Dashboard" Icon="Home"/>
-                <NavigationViewItem Content="Projects" Tag="Projects"/>
+                <NavigationViewItem Content="Dashboard">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xe88a;" Style="{StaticResource NavFontIconStyle}"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Projects" Tag="Projects">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xeb13;" Style="{StaticResource NavFontIconStyle}"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <Frame x:Name="navFrame" Loaded="navFrame_Loaded">
                 <Frame.ContentTransitions>

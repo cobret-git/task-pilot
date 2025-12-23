@@ -36,12 +36,12 @@ namespace TaskPilot.Core.ViewModel
             _dispatcherService = dispatcherService;
             _dialogService = dialogService;
             Colors = GetColors().ToArray();
+            Title = "Create Project";
             _color = Colors.First(x => x.Name == "Mint Fresh");
         }
         #endregion
 
         #region Properties
-        public string Header { get; private set; } = "Create Project";
         public string ProjectName
         {
             get => _data.Project.Name;
@@ -127,6 +127,11 @@ namespace TaskPilot.Core.ViewModel
             {
                 IsProjectNameTaken = false;
                 IsCheckingProjectName = false;
+                _dispatcherService.Run(() =>
+                {
+                    Popups.Clear();
+                    Popups.Add(new PopupData(PopupType.Warning, "Warning", "Project name cannot be null."));
+                });
                 return;
             }
 
@@ -148,6 +153,8 @@ namespace TaskPilot.Core.ViewModel
                     Popups.Clear();
                     if (IsProjectNameTaken)
                         Popups.Add(new PopupData(PopupType.Warning, "Warning", "Project name is already taken."));
+                    else
+                        Popups.Add(new PopupData(PopupType.Success, "Success", "Everything looks good. You can continue."));
                 });
             }
             catch (OperationCanceledException)
@@ -184,14 +191,16 @@ namespace TaskPilot.Core.ViewModel
 
             if (value.Action == FormDialogAction.Edit)
             {
-                Header = "Edit Project";
-                OnPropertyChanged(nameof(Header));
+                Title = "Edit Project";
+                OnPropertyChanged(nameof(Title));
             }
+
+            ValidateProjectNameAsync(ProjectName);
         }
         #endregion
 
         #region CanExecute
-        private bool CanSaveChanges() => !IsProjectNameTaken && !IsCheckingProjectName;
+        private bool CanSaveChanges() => !string.IsNullOrWhiteSpace(ProjectName) && !IsProjectNameTaken && !IsCheckingProjectName;
         #endregion
 
         #region Helpers

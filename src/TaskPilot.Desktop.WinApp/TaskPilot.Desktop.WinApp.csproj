@@ -15,8 +15,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\Logo\app_icon.svg" />
+    <Content Remove="Assets\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-Bold.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-ExtraLight.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-Light.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-Medium.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-Regular.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-SemiBold.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded-Thin.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-Bold.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-ExtraLight.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-Light.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-Medium.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-Regular.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-SemiBold.ttf" />
+    <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-Thin.ttf" />
+    <None Remove="Assets\Styles.xaml" />
     <None Remove="Dialogs\ProjectFormDialog.xaml" />
     <None Remove="Pages\ProjectFormPage.xaml" />
     <None Remove="Pages\ProjectsBrowser.xaml" />
@@ -52,6 +68,55 @@
     <ProjectReference Include="..\TaskPilot.Core\TaskPilot.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-ExtraLight.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-Medium.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-SemiBold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded-Thin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-ExtraLight.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-Medium.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-SemiBold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\MaterialSymbolsRounded_Filled-Thin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Assets\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Pages\ProjectsBrowser.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -82,8 +147,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.29.2025</AssemblyVersion>
-    <FileVersion>1.0.29.2025</FileVersion>
+    <AssemblyVersion>1.0.56.2025</AssemblyVersion>
+    <FileVersion>1.0.56.2025</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>
