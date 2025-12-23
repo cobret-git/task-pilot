@@ -17,6 +17,7 @@
     <Content Remove="Assets\Logo\app_icon.svg" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Controls\MarkdownEditorControl.xaml" />
     <None Remove="Dialogs\ProjectFormDialog.xaml" />
     <None Remove="Pages\ProjectFormPage.xaml" />
     <None Remove="Pages\ProjectsBrowser.xaml" />
@@ -66,6 +67,11 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\MarkdownEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -82,8 +88,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.29.2025</AssemblyVersion>
-    <FileVersion>1.0.29.2025</FileVersion>
+    <AssemblyVersion>1.0.42.2025</AssemblyVersion>
+    <FileVersion>1.0.42.2025</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>

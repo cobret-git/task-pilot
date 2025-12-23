@@ -29,7 +29,7 @@
         <NavigationView x:Name="navView"
                         Grid.Row="1"
                         IsSettingsVisible="True"
-                        IsBackButtonVisible="Visible"
+                        IsBackButtonVisible="Collapsed"
                         IsPaneToggleButtonVisible="False"
                         SelectionChanged="navView_SelectionChanged"
                         AlwaysShowHeader="False"

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="TaskPilot.Desktop.WinApp.Controls.MarkdownEditorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TaskPilot.Desktop.WinApp.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <TabView x:Name="EditorTabView"
+                 VerticalAlignment="Stretch"
+                 IsAddTabButtonVisible="False"
+                 CanReorderTabs="False"
+                 CanDragTabs="False"
+                 CornerRadius="6" 
+                 Padding="0"
+                 SelectionChanged="EditorTabView_SelectionChanged">
+
+            <!-- Write Tab -->
+            <TabViewItem x:Name="WriteTab" Header="Write" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <SymbolIconSource Symbol="Edit"/>
+                </TabViewItem.IconSource>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Formatting Toolbar -->
+                    <CommandBar x:Name="FormattingToolbar" 
+                                Grid.Row="0"
+                                HorizontalAlignment="Left"
+                                DefaultLabelPosition="Collapsed"
+                                OverflowButtonVisibility="Auto">
+
+                        <!-- Bold -->
+                        <AppBarButton x:Name="BoldButton"
+                                      Icon="Bold"
+                                      Label="Bold"
+                                      Click="BoldButton_Click"
+                                      ToolTipService.ToolTip="Bold (Ctrl+B) - Use ** or __ around text">
+                            <AppBarButton.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="B" Modifiers="Control"/>
+                            </AppBarButton.KeyboardAccelerators>
+                        </AppBarButton>
+
+                        <!-- Italic -->
+                        <AppBarButton x:Name="ItalicButton"
+                                      Icon="Italic"
+                                      Label="Italic"
+                                      Click="ItalicButton_Click"
+                                      ToolTipService.ToolTip="Italic (Ctrl+I) - Use * or _ around text">
+                            <AppBarButton.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="I" Modifiers="Control"/>
+                            </AppBarButton.KeyboardAccelerators>
+                        </AppBarButton>
+
+                        <AppBarSeparator/>
+
+                        <!-- Link -->
+                        <AppBarButton x:Name="LinkButton"
+                                      Icon="Link"
+                                      Label="Link"
+                                      Click="LinkButton_Click"
+                                      ToolTipService.ToolTip="Link (Ctrl+K) - Format: [text](url)">
+                            <AppBarButton.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="K" Modifiers="Control"/>
+                            </AppBarButton.KeyboardAccelerators>
+                        </AppBarButton>
+
+                        <AppBarSeparator/>
+
+                        <!-- Unordered List -->
+                        <AppBarButton x:Name="BulletListButton"
+                                      Label="Bullet List"
+                                      Click="BulletListButton_Click"
+                                      ToolTipService.ToolTip="Bullet List (Ctrl+U) - Prefix lines with - or * or +">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE8FD;"/>
+                            </AppBarButton.Icon>
+                            <AppBarButton.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="U" Modifiers="Control"/>
+                            </AppBarButton.KeyboardAccelerators>
+                        </AppBarButton>
+
+                        <!-- Ordered List -->
+                        <AppBarButton x:Name="NumberListButton"
+                                      Label="Numbered List"
+                                      Click="NumberListButton_Click"
+                                      ToolTipService.ToolTip="Numbered List (Ctrl+Shift+O) - Prefix lines with 1. 2. 3.">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE8FE;"/>
+                            </AppBarButton.Icon>
+                            <AppBarButton.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="O" Modifiers="Control,Shift"/>
+                            </AppBarButton.KeyboardAccelerators>
+                        </AppBarButton>
+
+                        <AppBarSeparator/>
+
+                        <!-- Help Flyout -->
+                        <AppBarButton Icon="Help" Label="Help">
+                            <AppBarButton.Flyout>
+                                <Flyout>
+                                    <StackPanel Width="300" Spacing="8">
+                                        <TextBlock Text="Markdown Quick Reference" 
+                                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                                        <TextBlock TextWrapping="Wrap" Opacity="0.8">
+                                            <Run Text="Bold:" FontWeight="Bold"/>
+                                            <Run Text=" **text** or __text__"/><LineBreak/>
+                                            
+                                            <Run Text="Italic:" FontStyle="Italic"/>
+                                            <Run Text=" *text* or _text_"/><LineBreak/>
+                                            
+                                            <Run Text="Link:"/>
+                                            <Run Text=" [text](url)"/><LineBreak/>
+                                            
+                                            <Run Text="List:"/>
+                                            <Run Text=" - item or * item"/><LineBreak/>
+                                            
+                                            <Run Text="Numbered:"/>
+                                            <Run Text=" 1. item"/><LineBreak/><LineBreak/>
+                                            
+                                            <Run Text="Escape special chars:" FontWeight="SemiBold"/><LineBreak/>
+                                            <Run Text=" Use backslash: \* \_ \[ \]"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Flyout>
+                            </AppBarButton.Flyout>
+                        </AppBarButton>
+
+                    </CommandBar>
+
+                    <!-- Markdown Editor TextBox -->
+                    <TextBox x:Name="MarkdownTextBox"
+                             Grid.Row="1"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             PlaceholderText="Type your description here..."
+                             BorderThickness="0"
+                             Background="Transparent"
+                             TextChanged="MarkdownTextBox_TextChanged"/>
+                </Grid>
+            </TabViewItem>
+
+            <!-- Preview Tab -->
+            <TabViewItem x:Name="PreviewTab" Header="Preview" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <SymbolIconSource Symbol="View"/>
+                </TabViewItem.IconSource>
+                <Grid>
+                    <!-- Empty state when no content -->
+                    <TextBlock x:Name="EmptyPreviewText"
+                               Text="Nothing to preview"
+                               Opacity="0.6"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               Margin="12"
+                               Visibility="Visible"/>
+
+                    <!-- Preview content -->
+                    <ScrollViewer x:Name="PreviewScrollViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  Visibility="Collapsed">
+                        <RichTextBlock x:Name="PreviewRichText"
+                                       Padding="12"
+                                       TextWrapping="Wrap"
+                                       IsTextSelectionEnabled="True"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabViewItem>
+        </TabView>
+    </Grid>
+</UserControl>

@@ -92,7 +92,8 @@
                       HorizontalScrollBarVisibility="Disabled" 
                       VerticalScrollBarVisibility="Auto">
             <Grid>
-                <Grid MaxWidth="1200" Margin="24" RowSpacing="16">
+                <Grid
+                    >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <!-- Search + Create -->
