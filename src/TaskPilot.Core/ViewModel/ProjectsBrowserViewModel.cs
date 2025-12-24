@@ -26,8 +26,13 @@ namespace TaskPilot.Core.ViewModel
         private bool _disposed;
         private string _searchQuery = string.Empty;
         private bool _showArchived = false;
-        private ProjectSortBy _sortBy = ProjectSortBy.Name;
+        private ProjectSortBy _sortBy = ProjectSortBy.SortOrder;
+        private bool _sortByName = false;
+        private bool _sortByCreatedDate = false;
+        private bool _sortByUpdatedDate = false;
+        private bool _sortBySortOrder = true;
         private bool _sortAscending = true;
+        private bool _sortDescending = false;
         private List<Project> _allProjects = new();
         #endregion
 
@@ -102,6 +107,90 @@ namespace TaskPilot.Core.ViewModel
         }
 
         /// <summary>
+        /// Gets or sets the sorting criteria by name.
+        /// </summary>
+        public bool SortByName
+        {
+            get => _sortByName;
+            set
+            {
+                if (SetProperty(ref _sortByName, value))
+                {
+                    if (value)
+                    {
+                        SortByCreatedDate = false;
+                        SortByUpdatedDate = false;
+                        SortBySortOrder = false;
+                        SortBy = ProjectSortBy.Name;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the sorting criteria by created date.
+        /// </summary>
+        public bool SortByCreatedDate
+        {
+            get => _sortByCreatedDate;
+            set
+            {
+                if (SetProperty(ref _sortByCreatedDate, value))
+                {
+                    if (value)
+                    {
+                        SortByName = false;
+                        SortByUpdatedDate = false;
+                        SortBySortOrder = false;
+                        SortBy = ProjectSortBy.CreatedDate;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the sorting criteria by updated date.
+        /// </summary>
+        public bool SortByUpdatedDate
+        {
+            get => _sortByUpdatedDate;
+            set
+            {
+                if (SetProperty(ref _sortByUpdatedDate, value))
+                {
+                    if (value)
+                    {
+                        SortByName = false;
+                        SortByCreatedDate = false;
+                        SortBySortOrder = false;
+                        SortBy = ProjectSortBy.UpdatedDate;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the sorting criteria by sort order.
+        /// </summary>
+        public bool SortBySortOrder
+        {
+            get => _sortBySortOrder;
+            set
+            {
+                if (SetProperty(ref _sortBySortOrder, value))
+                {
+                    if (value)
+                    {
+                        SortByName = false;
+                        SortByCreatedDate = false;
+                        SortByUpdatedDate = false;
+                        SortBy = ProjectSortBy.SortOrder;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets whether to sort in ascending order.
         /// </summary>
         public bool SortAscending
@@ -111,6 +200,23 @@ namespace TaskPilot.Core.ViewModel
             {
                 if (SetProperty(ref _sortAscending, value))
                 {
+                    SetProperty(ref _sortDescending, !value, nameof(SortDescending));
+                    ApplyFilterAndSort();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether to sort in descending order.
+        /// </summary>
+        public bool SortDescending
+        {
+            get => _sortDescending;
+            set
+            {
+                if (SetProperty(ref _sortDescending, value))
+                {
+                    SetProperty(ref _sortAscending, !value, nameof(SortAscending));
                     ApplyFilterAndSort();
                 }
             }
