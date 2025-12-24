@@ -121,25 +121,25 @@ namespace TaskPilot.Core.ViewModel
             _nameValidationCts?.Dispose();
             _nameValidationCts = new CancellationTokenSource();
 
-            var token = _nameValidationCts.Token;
-
-            if (string.IsNullOrWhiteSpace(projectName))
-            {
-                IsProjectNameTaken = false;
-                IsCheckingProjectName = false;
-                _dispatcherService.Run(() =>
-                {
-                    Popups.Clear();
-                    Popups.Add(new PopupData(PopupType.Warning, "Warning", "Project name cannot be null."));
-                });
-                return;
-            }
-
-            IsCheckingProjectName = true;
-            NotifyCanExecuteChanged();
+            var token = _nameValidationCts.Token;            
 
             try
             {
+                if (string.IsNullOrWhiteSpace(projectName))
+                {
+                    IsProjectNameTaken = false;
+                    IsCheckingProjectName = false;
+                    _dispatcherService.Run(() =>
+                    {
+                        Popups.Clear();
+                        Popups.Add(new PopupData(PopupType.Warning, "Warning", "Project name cannot be null."));
+                    });
+                    return;
+                }
+
+                IsCheckingProjectName = true;
+                NotifyCanExecuteChanged();
+
                 await Task.Delay(300, token);
 
                 var excludeId = _data.Action == FormDialogAction.Edit ? _data.Project.Id : (int?)null;

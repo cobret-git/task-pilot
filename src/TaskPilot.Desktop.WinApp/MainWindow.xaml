@@ -13,7 +13,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="gridXamlRoot">
+    <Grid x:Name="gridXamlRoot" Loaded="gridXamlRoot_Loaded">
         <Grid.Resources>
             <Style x:Key="NavFontIconStyle" TargetType="FontIcon">
                 <Setter Property="FontFamily" Value="{StaticResource MaterialOutlineThinIconFontFamily}"/>

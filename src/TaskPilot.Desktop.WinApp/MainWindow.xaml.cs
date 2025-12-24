@@ -22,6 +22,7 @@ namespace TaskPilot.Desktop.WinApp
         #region Fields
         private readonly Microsoft.UI.Windowing.AppWindow _appWindow;
         private readonly INavigationService _navigationService;
+        private readonly IDialogService _dialogService;
         private bool navigationFrameLoaded = false;
         #endregion
 
@@ -31,6 +32,7 @@ namespace TaskPilot.Desktop.WinApp
             InitializeComponent();
             _appWindow = GetAppWindowForCurrentWindow();
             _navigationService = App.Current.Services.GetRequiredService<INavigationService>();
+            _dialogService = App.Current.Services.GetRequiredService<IDialogService>();
             this.ExtendsContentIntoTitleBar = true; // Extend the content into the title bar and hide the default titlebar
             this.SetTitleBar(titleBar); // Set the custom title bar
         }
@@ -65,6 +67,10 @@ namespace TaskPilot.Desktop.WinApp
             navigationService.Frame = this.navFrame;
             navigationFrameLoaded = true;
         }
+        private void gridXamlRoot_Loaded(object sender, RoutedEventArgs e)
+        {
+            (_dialogService as DialogService)!.XamlRoot = gridXamlRoot.XamlRoot;
+        }
         #endregion
 
         #region Helpers
@@ -74,8 +80,8 @@ namespace TaskPilot.Desktop.WinApp
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             return AppWindow.GetFromWindowId(windowId);
         }
+
         #endregion
 
-        
     }
 }
