@@ -147,8 +147,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.68.2025</AssemblyVersion>
-    <FileVersion>1.0.68.2025</FileVersion>
+    <AssemblyVersion>1.0.81.2025</AssemblyVersion>
+    <FileVersion>1.0.81.2025</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>

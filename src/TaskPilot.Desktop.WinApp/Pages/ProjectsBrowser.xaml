@@ -14,67 +14,98 @@
     <Page.Resources>
         <!-- Project Item Template -->
         <DataTemplate x:Key="ProjectItemTemplate" x:DataType="entities:Project">
-            <Grid Padding="12,8" Background="Transparent">
+            <Grid Padding="0" 
+                  Background="Transparent"
+                  PointerEntered="ProjectItem_PointerEntered"
+                  PointerExited="ProjectItem_PointerExited">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
 
-                <!-- Project Icon -->
-                <Grid Grid.Column="0" Grid.RowSpan="2" 
-                      Width="48" Height="48" 
-                      CornerRadius="8"
-                      Margin="0,0,12,0"
-                      VerticalAlignment="Center">
-                    <Grid.Background>
-                        <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}" 
-                                       Opacity="0.15"/>
-                    </Grid.Background>
-                    <FontIcon Glyph="&#xe2c7;" Height="24" Style="{StaticResource ScaledFilledFontIconStyle}">
-                        <FontIcon.RenderTransform>
-                            <ScaleTransform ScaleX="2" ScaleY="2"/>
-                        </FontIcon.RenderTransform>
-                        <FontIcon.Foreground>
-                            <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}"/>
-                        </FontIcon.Foreground>
-                    </FontIcon>
+                <!-- Section 1: Icon Button (Open Project) -->
+                <Button Grid.Column="0" Width="48" Height="48"
+                        Padding="0" CornerRadius="8"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding DataContext.OpenProjectCommand, ElementName=ProjectsListView}"
+                        CommandParameter="{x:Bind}">
+                    <Grid CornerRadius="8">
+                        <Grid.Background>
+                            <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}" 
+                                             Opacity="0.15"/>
+                        </Grid.Background>
+
+                        <!-- Default icon -->
+                        <FontIcon x:Name="DefaultIcon" 
+                                  Glyph="&#xe2c7;"
+                                  Style="{StaticResource ScaledFilledFontIconStyle}"
+                                  FontSize="24"
+                                  Opacity="1">
+                            <FontIcon.Foreground>
+                                <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}"/>
+                            </FontIcon.Foreground>
+                        </FontIcon>
+
+                        <!-- Hover icon (shown via VisualStateManager) -->
+                        <FontIcon x:Name="HoverIcon" 
+                                  Glyph="&#xe89e;" 
+                                  FontSize="23"
+                                  Height="Auto"
+                                  FontFamily="{StaticResource MaterialOutlineRegularIconFontFamily}"
+                                  Style="{StaticResource ScaledFilledFontIconStyle}"
+                                  Opacity="0">
+                            <FontIcon.Foreground>
+                                <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}"/>
+                            </FontIcon.Foreground>
+                            <FontIcon.RenderTransform>
+                                <ScaleTransform ScaleY="1" ScaleX="1"/>
+                            </FontIcon.RenderTransform>
+                        </FontIcon>
+                    </Grid>
+                </Button>
+
+                <!-- Section 2: Draggable Content (Name + Details) -->
+                <Grid Grid.Column="1" 
+                      Padding="12,8,12,8"
+                      Background="Transparent"
+                      PointerEntered="DragArea_PointerEntered"
+                      PointerExited="DragArea_PointerExited">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="{x:Bind Name}"
+                               Style="{StaticResource BodyStrongTextBlockStyle}"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="16">
+                        <TextBlock Opacity="0.6">
+                            <Run Text="Created:"/>
+                            <Run Text="{x:Bind CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"/>
+                        </TextBlock>
+                    </StackPanel>
                 </Grid>
 
-                <!-- Project Name -->
-                <TextBlock Grid.Column="1" Grid.Row="0"
-                          Text="{x:Bind Name}"
-                          Style="{StaticResource BodyStrongTextBlockStyle}"
-                          TextTrimming="CharacterEllipsis"
-                          ToolTipService.ToolTip="{x:Bind Name}"/>
-
-                <!-- Dates -->
-                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Spacing="16">
-                    <TextBlock Opacity="0.6">
-                        <Run Text="Created:"/>
-                        <Run Text="{x:Bind CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"/>
-                    </TextBlock>
-                    <TextBlock Opacity="0.6" Visibility="{x:Bind UpdatedAt, Converter={StaticResource NullToVisibilityConverter}}">
-                        <Run Text="Updated:"/>
-                        <Run Text="{x:Bind UpdatedAt, Converter={StaticResource DateTimeToStringConverter}}"/>
-                    </TextBlock>
-                </StackPanel>
-
-                <!-- Archived Badge -->
-                <Border Grid.Column="2" Grid.RowSpan="2"
-                       Visibility="{x:Bind IsArchived}"
-                       Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
-                       Padding="8,4"
-                       CornerRadius="4"
-                       VerticalAlignment="Center">
-                    <TextBlock Text="Archived" 
-                              Style="{StaticResource CaptionTextBlockStyle}"
-                              Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
-                </Border>
+                <!-- Section 3: Menu Button (Optional, shown on hover) -->
+                <Button Grid.Column="2"
+                        x:Name="MenuButton"
+                        Padding="8"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Visibility="Collapsed">
+                    <FontIcon Glyph="&#xE712;" FontSize="16"/>
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <!-- Same as context menu -->
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
             </Grid>
         </DataTemplate>
     </Page.Resources>
@@ -98,11 +129,8 @@
                 <Grid MaxWidth="1200" Margin="24" RowSpacing="16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <!-- Search + Create -->
                         <RowDefinition Height="Auto"/>
-                        <!-- Sort + Filter Controls -->
                         <RowDefinition Height="*"/>
-                        <!-- Projects List -->
                     </Grid.RowDefinitions>
 
                     <!-- Row 0: Search + Create Button -->
@@ -223,21 +251,23 @@
                         </StackPanel>
 
                         <!-- Projects ListView -->
-                        <ListView ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
+                        <ListView x:Name="ProjectsListView" 
+                                  ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
                                   ItemTemplate="{StaticResource ProjectItemTemplate}"
                                   SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   SelectionMode="Single"
                                   IsItemClickEnabled="True"
-                                  ItemClick="ListView_ItemClick"
                                   RightTapped="ListView_RightTapped"
                                   Visibility="{x:Bind ViewModel.ProjectsMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
 
                             <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="Padding" Value="0"/>
+                                <Style TargetType="ListViewItem" BasedOn="{StaticResource OutlineListViewItemStyle}">
+                                    <Setter Property="Padding" Value="3,0,0,0"/>
                                     <Setter Property="Background" Value="Transparent"/>
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="Margin" Value="0,0,0,4"/>
+                                    <Setter Property="Margin" Value="0,0,0,1"/>
+                                    <Setter Property="CornerRadius" Value="11"/>
+                                    <Setter Property="Height" Value="Auto"/>
                                 </Style>
                             </ListView.ItemContainerStyle>
 

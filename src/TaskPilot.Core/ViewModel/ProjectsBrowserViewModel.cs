@@ -118,6 +118,7 @@ namespace TaskPilot.Core.ViewModel
                 {
                     ApplyFilterAndSort();
                 }
+                OnSortByChanged(value);
             }
         }
 
@@ -285,6 +286,8 @@ namespace TaskPilot.Core.ViewModel
         /// True when projects exist in database but none match current filters.
         /// </summary>
         public bool ShowNoSearchResultsMessage => ProjectsExistInDatabase && !ProjectsMatchCurrentFilter;
+
+        public bool CanReorderProjects => SortBy == ProjectSortBy.SortOrder;
 
         #endregion
 
@@ -550,6 +553,10 @@ namespace TaskPilot.Core.ViewModel
             _ = RefreshProjectsAsync();
         }
 
+        private void OnSortByChanged(ProjectSortBy value)
+        {
+            OnPropertyChanged(nameof(CanReorderProjects));
+        }
         #endregion
 
         #region Helpers

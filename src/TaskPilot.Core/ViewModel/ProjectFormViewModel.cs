@@ -185,7 +185,7 @@ namespace TaskPilot.Core.ViewModel
         {
             if (data is not ProjectFormData value)
                 throw new ArgumentException("Data must be of type ProjectFormData", nameof(data));
-
+            _data = value;
             _color = Colors.FirstOrDefault(x => x.HexValue == value.Project.Color) ?? _color;
             OnPropertyChanged(nameof(Color));
 
