@@ -114,7 +114,8 @@
                                         PlaceholderText="Search projects..."
                                         QueryIcon="Find"
                                         Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        VerticalAlignment="Center"/>
+                                        VerticalAlignment="Center"
+                                        ToolTipService.ToolTip="Use multiple words to narrow results"/>
 
                         <Button Grid.Column="1"
                                 Content="New Project"
