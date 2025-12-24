@@ -35,7 +35,10 @@
                         <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}" 
                                        Opacity="0.15"/>
                     </Grid.Background>
-                    <FontIcon Glyph="&#xE8F1;" FontSize="24">
+                    <FontIcon Glyph="&#xe2c7;" Height="24" Style="{StaticResource ScaledFilledFontIconStyle}">
+                        <FontIcon.RenderTransform>
+                            <ScaleTransform ScaleX="2" ScaleY="2"/>
+                        </FontIcon.RenderTransform>
                         <FontIcon.Foreground>
                             <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}"/>
                         </FontIcon.Foreground>
@@ -104,7 +107,7 @@
 
                     <!-- Row 0: Search + Create Button -->
                     <Grid Grid.Row="0" ColumnSpacing="12"
-                          Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                          Visibility="{x:Bind ViewModel.ProjectsExistInDatabase, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -130,7 +133,7 @@
                     <StackPanel Grid.Row="1" 
                                 HorizontalAlignment="Left"
                                 Orientation="Horizontal"
-                                Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{x:Bind ViewModel.ProjectsExistInDatabase, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                         <DropDownButton>
                             <DropDownButton.Content>
                                 <StackPanel Orientation="Horizontal">
@@ -179,13 +182,13 @@
                                       Width="48" Height="48"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
-                                      Visibility="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"/>
+                                      Visibility="{x:Bind ViewModel.IsRefreshing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                        <!-- Empty State -->
+                        <!-- Empty State: No Projects Exist in Database -->
                         <StackPanel HorizontalAlignment="Center" 
                                     VerticalAlignment="Center"
                                     Spacing="16"
-                                    Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                    Visibility="{x:Bind ViewModel.ShowCreateFirstProjectPrompt, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <FontIcon Glyph="&#xE8F1;" FontSize="72" Opacity="0.3"/>
                             <TextBlock Text="No projects found" 
                                        HorizontalAlignment="Center"
@@ -201,37 +204,66 @@
                                     HorizontalAlignment="Center"/>
                         </StackPanel>
 
+                        <!-- No Results State: Projects exist but search/filter yielded no results -->
+                        <StackPanel HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    Spacing="16"
+                                    Visibility="{x:Bind ViewModel.ShowNoSearchResultsMessage, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <FontIcon Glyph="&#xE721;" FontSize="72" Opacity="0.3"/>
+                            <TextBlock Text="No matching projects" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Opacity="0.6"/>
+                            <TextBlock HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Opacity="0.6">
+                                <Run Text="Try adjusting your search or filters"/>
+                            </TextBlock>
+                        </StackPanel>
+
                         <!-- Projects ListView -->
                         <ListView ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
                                   ItemTemplate="{StaticResource ProjectItemTemplate}"
+                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   SelectionMode="Single"
                                   IsItemClickEnabled="True"
                                   ItemClick="ListView_ItemClick"
-                                  Visibility="{x:Bind ViewModel.HasProjects, Mode=OneWay}">
+                                  RightTapped="ListView_RightTapped"
+                                  Visibility="{x:Bind ViewModel.ProjectsMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
 
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                     <Setter Property="Margin" Value="0,0,0,4"/>
                                 </Style>
                             </ListView.ItemContainerStyle>
 
-                            <!-- Context Menu -->
                             <ListView.ContextFlyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem Text="Open" 
                                                     Icon="OpenFile"
                                                     Command="{x:Bind ViewModel.OpenProjectCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{x:Bind ViewModel.SelectedItem, Mode=OneWay}">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Key="Enter"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Edit" 
                                                     Icon="Edit"
                                                     Command="{x:Bind ViewModel.EditProjectCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{x:Bind ViewModel.SelectedItem, Mode=OneWay}">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Modifiers="Control" Key="E"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
                                     <MenuFlyoutItem Text="Delete" 
                                                     Icon="Delete"
                                                     Command="{x:Bind ViewModel.DeleteProjectCommand}"
-                                                    CommandParameter="{Binding}">
+                                                    CommandParameter="{x:Bind ViewModel.SelectedItem, Mode=OneWay}">
                                         <MenuFlyoutItem.KeyboardAccelerators>
                                             <KeyboardAccelerator Key="Delete"/>
                                         </MenuFlyoutItem.KeyboardAccelerators>

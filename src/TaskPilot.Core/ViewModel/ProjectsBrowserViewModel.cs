@@ -1,10 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using TaskPilot.Core.Components.Data;
 using TaskPilot.Core.Components.Entities;
 using TaskPilot.Core.Services;
@@ -33,7 +29,9 @@ namespace TaskPilot.Core.ViewModel
         private bool _sortBySortOrder = true;
         private bool _sortAscending = true;
         private bool _sortDescending = false;
+        private bool _projectsExistInDatabase;
         private List<Project> _allProjects = new();
+        [ObservableProperty] private Project? _selectedItem;
         #endregion
 
         #region Constructors
@@ -60,6 +58,23 @@ namespace TaskPilot.Core.ViewModel
         /// Gets the filtered and sorted collection of projects to display.
         /// </summary>
         public ObservableCollection<Project> Projects { get; }
+
+        /// <summary>
+        /// Gets whether any projects exist in the database (regardless of filters/search).
+        /// Used to determine if we should show search/filter UI.
+        /// </summary>
+        public bool ProjectsExistInDatabase
+        {
+            get => _projectsExistInDatabase;
+            private set
+            {
+                if (SetProperty(ref _projectsExistInDatabase, value))
+                {
+                    OnPropertyChanged(nameof(ShowCreateFirstProjectPrompt));
+                    OnPropertyChanged(nameof(ShowNoSearchResultsMessage));
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the search query for filtering projects by name.
@@ -254,9 +269,22 @@ namespace TaskPilot.Core.ViewModel
         }
 
         /// <summary>
-        /// Gets whether there are any projects to display.
+        /// Gets whether any projects match the current search/filter criteria.
+        /// Used to show/hide the ListView.
         /// </summary>
-        public bool HasProjects => Projects.Any();
+        public bool ProjectsMatchCurrentFilter => Projects.Any();
+
+        /// <summary>
+        /// Gets whether to show the "create your first project" empty state.
+        /// True when the database is completely empty.
+        /// </summary>
+        public bool ShowCreateFirstProjectPrompt => !ProjectsExistInDatabase;
+
+        /// <summary>
+        /// Gets whether to show the "no search results" message.
+        /// True when projects exist in database but none match current filters.
+        /// </summary>
+        public bool ShowNoSearchResultsMessage => ProjectsExistInDatabase && !ProjectsMatchCurrentFilter;
 
         #endregion
 
@@ -280,6 +308,7 @@ namespace TaskPilot.Core.ViewModel
                 if (result.IsSuccess && result.Data != null)
                 {
                     _allProjects = result.Data.ToList();
+                    ProjectsExistInDatabase = _allProjects.Any();
                     ApplyFilterAndSort();
 
                     Serilog.Log.Information("Projects refreshed successfully. Total count: {Count}", _allProjects.Count);
@@ -309,7 +338,7 @@ namespace TaskPilot.Core.ViewModel
         /// <summary>
         /// Opens the specified project by navigating to its detail page.
         /// </summary>
-        [RelayCommand(CanExecute = nameof(CanOpenProject))] 
+        [RelayCommand(CanExecute = nameof(CanOpenProject))]
         private async Task OpenProjectAsync(Project? project)
         {
             if (project == null)
@@ -579,7 +608,9 @@ namespace TaskPilot.Core.ViewModel
                     Projects.Add(project);
                 }
 
-                OnPropertyChanged(nameof(HasProjects));
+                OnPropertyChanged(nameof(ProjectsMatchCurrentFilter));
+                OnPropertyChanged(nameof(ShowCreateFirstProjectPrompt));
+                OnPropertyChanged(nameof(ShowNoSearchResultsMessage));
             });
         }
 

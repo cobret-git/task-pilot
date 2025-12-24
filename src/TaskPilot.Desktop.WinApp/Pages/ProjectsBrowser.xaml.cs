@@ -47,6 +47,26 @@ namespace TaskPilot.Desktop.WinApp.Pages
                 await ViewModel.OpenProjectCommand.ExecuteAsync(project);
             }
         }
+
+        private void ListView_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            // Get the data context of the right-tapped element
+            if (e.OriginalSource is FrameworkElement element)
+            {
+                // Walk up the visual tree to find the ListViewItem
+                var item = element;
+                while (item != null && item is not ListViewItem)
+                {
+                    item = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(item) as FrameworkElement;
+                }
+
+                // If we found a ListViewItem, get its DataContext (the Project)
+                if (item is ListViewItem listViewItem && listViewItem.Content is Project project)
+                {
+                    ViewModel.SelectedItem = project;
+                }
+            }
+        }
         #endregion
     }
 }
