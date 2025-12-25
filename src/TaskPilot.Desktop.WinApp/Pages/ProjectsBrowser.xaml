@@ -98,7 +98,8 @@
                         Background="Transparent"
                         Visibility="{Binding DataContext.CanReorderProjects, ElementName=ProjectsListView, Converter={StaticResource BoolToVisibilityConverter}}"
                         PointerEntered="DragHandle_PointerEntered"
-                        PointerExited="DragHandle_PointerExited">
+                        PointerExited="DragHandle_PointerExited"
+                        PointerPressed="DragHandle_PointerPressed">
                     <FontIcon Glyph="&#xe25d;" 
                               FontSize="20"
                               Style="{StaticResource ScaledOutlineFontIconStyle}"
@@ -262,8 +263,12 @@
                                   SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   SelectionMode="Single"
                                   IsItemClickEnabled="True"
+                                  ItemClick="ListView_ItemClick"
                                   RightTapped="ListView_RightTapped"
-                                  Visibility="{x:Bind ViewModel.ProjectsMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                  Visibility="{x:Bind ViewModel.ProjectsMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                  AllowDrop="True"
+                                  DragOver="ProjectsListView_DragOver"
+                                  Drop="ProjectsListView_Drop">
 
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem" BasedOn="{StaticResource OutlineListViewItemStyle}">
