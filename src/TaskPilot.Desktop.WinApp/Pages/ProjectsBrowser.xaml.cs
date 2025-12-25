@@ -69,14 +69,11 @@ namespace TaskPilot.Desktop.WinApp.Pages
         {
             if (sender is Grid grid)
             {
-                // Find the named elements
                 var defaultIcon = FindChildByName<FontIcon>(grid, "DefaultIcon");
                 var hoverIcon = FindChildByName<FontIcon>(grid, "HoverIcon");
-                var menuButton = FindChildByName<Button>(grid, "MenuButton");
 
                 if (defaultIcon != null) defaultIcon.Opacity = 0;
                 if (hoverIcon != null) hoverIcon.Opacity = 1;
-                if (menuButton != null) menuButton.Opacity = 1;
             }
         }
 
@@ -86,15 +83,14 @@ namespace TaskPilot.Desktop.WinApp.Pages
             {
                 var defaultIcon = FindChildByName<FontIcon>(grid, "DefaultIcon");
                 var hoverIcon = FindChildByName<FontIcon>(grid, "HoverIcon");
-                var menuButton = FindChildByName<Button>(grid, "MenuButton");
 
                 if (defaultIcon != null) defaultIcon.Opacity = 1;
                 if (hoverIcon != null) hoverIcon.Opacity = 0;
-                if (menuButton != null) menuButton.Opacity = 0;
             }
         }
 
-        private void DragArea_PointerEntered(object sender, PointerRoutedEventArgs e)
+
+        private void DragHandle_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (sender is UIElement element && ViewModel.CanReorderProjects)
             {
@@ -109,14 +105,13 @@ namespace TaskPilot.Desktop.WinApp.Pages
             }
         }
 
-        private void DragArea_PointerExited(object sender, PointerRoutedEventArgs e)
+        private void DragHandle_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            if (sender is FrameworkElement element)
+            if (sender is UIElement element && _originalCursor != null)
             {
-                var cursor = InputSystemCursor.Create(InputSystemCursorShape.Arrow);
                 typeof(UIElement).InvokeMember("ProtectedCursor",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetProperty,
-                    null, element, new object[] { cursor });
+                    null, element, new object[] { _originalCursor });
             }
         }
         #endregion

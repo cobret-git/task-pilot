@@ -20,23 +20,23 @@
                   PointerExited="ProjectItem_PointerExited">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
+                    <!-- Icon -->
                     <ColumnDefinition Width="*"/>
+                    <!-- Content -->
                     <ColumnDefinition Width="Auto"/>
+                    <!-- Drag handle -->
                 </Grid.ColumnDefinitions>
 
-                <!-- Section 1: Icon Button (Open Project) -->
-                <Button Grid.Column="0" Width="48" Height="48"
-                        Padding="0" CornerRadius="8"
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding DataContext.OpenProjectCommand, ElementName=ProjectsListView}"
-                        CommandParameter="{x:Bind}">
+                <!-- Section 1: Project Icon (with hover effect) -->
+                <Border Grid.Column="0" 
+                        Width="48" Height="48"
+                        Padding="0" 
+                        CornerRadius="8"
+                        Background="Transparent">
                     <Grid CornerRadius="8">
                         <Grid.Background>
                             <SolidColorBrush Color="{x:Bind Color, Converter={StaticResource HexToColorConverter}}" 
-                                             Opacity="0.15"/>
+                                     Opacity="0.15"/>
                         </Grid.Background>
 
                         <!-- Default icon -->
@@ -50,7 +50,7 @@
                             </FontIcon.Foreground>
                         </FontIcon>
 
-                        <!-- Hover icon (shown via VisualStateManager) -->
+                        <!-- Hover icon -->
                         <FontIcon x:Name="HoverIcon" 
                                   Glyph="&#xe89e;" 
                                   FontSize="23"
@@ -66,14 +66,12 @@
                             </FontIcon.RenderTransform>
                         </FontIcon>
                     </Grid>
-                </Button>
+                </Border>
 
-                <!-- Section 2: Draggable Content (Name + Details) -->
+                <!-- Section 2: Project Info (name + metadata) -->
                 <Grid Grid.Column="1" 
                       Padding="12,8,12,8"
-                      Background="Transparent"
-                      PointerEntered="DragArea_PointerEntered"
-                      PointerExited="DragArea_PointerExited">
+                      Background="Transparent">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -92,20 +90,27 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Section 3: Menu Button (Optional, shown on hover) -->
-                <Button Grid.Column="2"
-                        x:Name="MenuButton"
-                        Padding="8"
+                <!-- Section 3: Drag Handle (visible only when CanReorderProjects) -->
+                <Border Grid.Column="2"
+                        x:Name="DragHandle"
+                        Width="48" Height="48"
+                        Padding="0"
                         Background="Transparent"
-                        BorderThickness="0"
-                        Visibility="Collapsed">
-                    <FontIcon Glyph="&#xE712;" FontSize="16"/>
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <!-- Same as context menu -->
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
+                        Visibility="{Binding DataContext.CanReorderProjects, ElementName=ProjectsListView, Converter={StaticResource BoolToVisibilityConverter}}"
+                        PointerEntered="DragHandle_PointerEntered"
+                        PointerExited="DragHandle_PointerExited">
+                    <FontIcon Glyph="&#xe25d;" 
+                              FontSize="20"
+                              Style="{StaticResource ScaledOutlineFontIconStyle}"
+                              FontFamily="{StaticResource MaterialOutlineRegularIconFontFamily}"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+                        <FontIcon.RenderTransform>
+                            <ScaleTransform ScaleY="1" ScaleX="1"/>
+                        </FontIcon.RenderTransform>
+                    </FontIcon>
+                </Border>
             </Grid>
         </DataTemplate>
     </Page.Resources>
