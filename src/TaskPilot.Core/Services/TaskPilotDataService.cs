@@ -69,6 +69,14 @@ namespace TaskPilot.Core.Services
                     await context.Database.MigrateAsync();
                 }
 
+                // Seed default task types if database is empty
+                var seedResult = await SeedDefaultTaskTypesAsync();
+                if (!seedResult.IsSuccess)
+                {
+                    Log.Warning("Failed to seed default task types: {Error}", seedResult.ErrorMessage);
+                    // Don't fail initialization if seeding fails - database is still usable
+                }
+
                 Log.Information("Database initialized successfully at {Path}", _configuration.GetFullDatabasePath());
                 return Result.Success();
             }
@@ -198,10 +206,17 @@ namespace TaskPilot.Core.Services
         /// <inheritdoc/>
         public async Task<Result<int>> CreateTaskAsync(TaskItem task)
         {
+            var _project = task.Project;
+            var _milestone = task.Milestone;
+            var _taskType = task.TaskType;
+
             try
             {
                 using var context = _contextFactory.CreateDbContext();
 
+                task.Project = null;
+                task.Milestone = null;
+                task.TaskType = null;
                 task.CreatedAt = DateTime.UtcNow;
                 task.UpdatedAt = null;
 
@@ -216,14 +231,28 @@ namespace TaskPilot.Core.Services
                 Log.Error(ex, "Failed to create task: {Title}", task.Title);
                 return Result<int>.Failure($"Failed to create task: {ex.Message}");
             }
+            finally
+            {
+                task.Project = _project;
+                task.Milestone = _milestone;
+                task.TaskType = _taskType;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<Result> UpdateTaskAsync(TaskItem task)
         {
+            var _project = task.Project;
+            var _milestone = task.Milestone;
+            var _taskType = task.TaskType;
+
             try
             {
                 using var context = _contextFactory.CreateDbContext();
+
+                task.Project = null;
+                task.Milestone = null;
+                task.TaskType = null;
 
                 var existing = await context.TaskItems.FindAsync(task.Id);
                 if (existing == null)
@@ -241,6 +270,12 @@ namespace TaskPilot.Core.Services
             {
                 Log.Error(ex, "Failed to update task {TaskId}", task.Id);
                 return Result.Failure($"Failed to update task: {ex.Message}");
+            }
+            finally
+            {
+                task.Project = _project;
+                task.Milestone = _milestone;
+                task.TaskType = _taskType;
             }
         }
 
@@ -932,6 +967,123 @@ namespace TaskPilot.Core.Services
             return false;
         }
 
+        /// <summary>
+        /// Seeds default task types if none exist in the database.
+        /// Called during database initialization.
+        /// </summary>
+        /// <returns>A result indicating success or failure.</returns>
+        private async Task<Result> SeedDefaultTaskTypesAsync()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                // Check if task types already exist
+                var existingCount = await context.TaskTypes.CountAsync();
+                if (existingCount > 0)
+                {
+                    Log.Information("Task types already exist ({Count}), skipping seed", existingCount);
+                    return Result.Success();
+                }
+
+                Log.Information("Seeding default task types");
+
+                var defaultTaskTypes = new List<TaskType>
+        {
+            new TaskType
+            {
+                Name = "Bug",
+                Color = "EF4444", // Crimson
+                SortOrder = 1,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Feature",
+                Color = "3B82F6", // Electric Blue
+                SortOrder = 2,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Enhancement",
+                Color = "10B981", // Emerald Green
+                SortOrder = 3,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Documentation",
+                Color = "A78BFA", // Lavender Glow
+                SortOrder = 4,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Research",
+                Color = "E056FD", // Magenta Rose
+                SortOrder = 5,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Refactoring",
+                Color = "F59E0B", // Golden Amber
+                SortOrder = 6,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Testing",
+                Color = "84CC16", // Lime Green
+                SortOrder = 7,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Design",
+                Color = "E056FD", // Magenta Rose
+                SortOrder = 8,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Infrastructure",
+                Color = "64748B", // Slate Gray
+                SortOrder = 9,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            },
+            new TaskType
+            {
+                Name = "Maintenance",
+                Color = "FB923C", // Soft Orange
+                SortOrder = 10,
+                Level = 0,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+
+                await context.TaskTypes.AddRangeAsync(defaultTaskTypes);
+                await context.SaveChangesAsync();
+
+                Log.Information("Successfully seeded {Count} default task types", defaultTaskTypes.Count);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to seed default task types");
+                return Result.Failure($"Failed to seed default task types: {ex.Message}");
+            }
+        }
         #endregion
 
         #region IDisposable

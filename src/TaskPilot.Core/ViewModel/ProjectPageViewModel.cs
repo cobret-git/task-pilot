@@ -352,11 +352,24 @@ namespace TaskPilot.Core.ViewModel
             try
             {
                 IsBusy = true;
-                
-                // TODO: Navigate to task form when implemented
-                await _dialogService.ShowInfoAsync(
-                    "Not Implemented", 
-                    "Task creation form will be implemented in a future update.");
+
+                var newTask = new TaskItem() 
+                { 
+                    CreatedAt = DateTime.UtcNow, 
+                    Project = CurrentProject,
+                    ProjectId = CurrentProject.Id,
+                };
+
+                var request = new TaskFormPageRequest(newTask, FormDialogAction.Create, CurrentProject, null);
+                var navResult = await _navigationService.NavigateToAsync(request);
+
+                if (!navResult.Success)
+                {
+                    Serilog.Log.Warning("Failed to navigate to task form: {Error}", navResult.ErrorMessage);
+                    await _dialogService.ShowErrorAsync(
+                        "Navigation Error",
+                        "Failed to navigate to task creation form.");
+                }
             }
             catch (Exception ex)
             {
@@ -401,16 +414,26 @@ namespace TaskPilot.Core.ViewModel
         [RelayCommand(CanExecute = nameof(CanEditTask))]
         private async Task EditTaskAsync(TaskItem? task)
         {
-            if (task == null) return;
-            
+            if (task == null)
+            {
+                Serilog.Log.Warning("EditTask called with null task");
+                return;
+            }
+
             try
             {
                 IsBusy = true;
-                
-                // TODO: Navigate to task edit form when implemented
-                await _dialogService.ShowInfoAsync(
-                    "Not Implemented", 
-                    "Task edit form will be implemented in a future update.");
+
+                var request = new TaskFormPageRequest(task, FormDialogAction.Edit, CurrentProject, null);
+                var navResult = await _navigationService.NavigateToAsync(request);
+
+                if (!navResult.Success)
+                {
+                    Serilog.Log.Warning("Failed to navigate to task form for editing: {Error}", navResult.ErrorMessage);
+                    await _dialogService.ShowErrorAsync(
+                        "Navigation Error",
+                        "Failed to navigate to task edit form.");
+                }
             }
             catch (Exception ex)
             {

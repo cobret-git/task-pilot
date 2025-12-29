@@ -71,6 +71,7 @@ namespace TaskPilot.Desktop.WinApp
             services.AddTransient<ProjectsBrowserViewModel>();
             services.AddTransient<ProjectFormViewModel>();
             services.AddTransient<ProjectPageViewModel>();
+            services.AddTransient<TaskFormViewModel>();
 
             return services.BuildServiceProvider();
         }

@@ -35,7 +35,8 @@ namespace TaskPilot.Desktop.WinApp.Services
             {
                 { typeof(ProjectsBrowserViewModel), typeof(ProjectsBrowser) },
                 { typeof(ProjectFormViewModel), typeof(ProjectFormPage) },
-                { typeof(ProjectPageViewModel), typeof(ProjectPage) }
+                { typeof(ProjectPageViewModel), typeof(ProjectPage) },
+                { typeof(TaskFormViewModel), typeof(TaskFormPage) }
             };
         }
 
