@@ -34,7 +34,8 @@ namespace TaskPilot.Desktop.WinApp.Services
             _viewModelToPageMapping = new Dictionary<Type, Type>()
             {
                 { typeof(ProjectsBrowserViewModel), typeof(ProjectsBrowser) },
-                { typeof(ProjectFormViewModel), typeof(ProjectFormPage) }
+                { typeof(ProjectFormViewModel), typeof(ProjectFormPage) },
+                { typeof(ProjectPageViewModel), typeof(ProjectPage) }
             };
         }
 

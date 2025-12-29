@@ -22,6 +22,10 @@
             <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <conv:PopupTypeToSeverityConverter x:Key="PopupTypeToSeverityConverter"/>
+            <conv:TaskStatusToIconConverter x:Key="TaskStatusToIconConverter"/>
+            <conv:TaskStatusToTextConverter x:Key="TaskStatusToTextConverter"/>
+            <conv:TaskStatusToCheckboxConverter x:Key="TaskStatusToCheckboxConverter"/>
+            <conv:TaskPriorityToTextConverter x:Key="TaskPriorityToTextConverter"/>
 
             <FontFamily x:Key="MaterialOutlineBoldIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Bold.ttf#Material Symbols Rounded</FontFamily>
             <FontFamily x:Key="MaterialOutlineExtraLightIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-ExtraLight.ttf#Material Symbols Rounded</FontFamily>

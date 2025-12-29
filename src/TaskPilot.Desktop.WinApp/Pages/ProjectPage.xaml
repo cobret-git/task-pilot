@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="TaskPilot.Desktop.WinApp.Pages.ProjectPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TaskPilot.Desktop.WinApp.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:entities="using:TaskPilot.Core.Components.Entities"
+    xmlns:data="using:TaskPilot.Core.Components.Data"
+    xmlns:viewmodel="using:TaskPilot.Core.ViewModel"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewmodel:ProjectPageViewModel}">
+
+    <Page.Resources>
+        <!-- Task Item Template -->
+        <DataTemplate x:Key="TaskItemTemplate" x:DataType="entities:TaskItem">
+            <Grid Padding="0" Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Checkbox -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Status icon -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- Content -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Column 0: Checkbox -->
+                <CheckBox Grid.Column="0"
+                          IsChecked="{x:Bind Status, Mode=OneWay, Converter={StaticResource TaskStatusToCheckboxConverter}}"
+                          Margin="0,0,12,0"
+                          VerticalAlignment="Center"
+                          Command="{Binding DataContext.ToggleCompletedCommand, ElementName=TasksListView}"
+                          CommandParameter="{x:Bind}"/>
+
+                <!-- Column 1: Status Icon with Project Color Border -->
+                <Border Grid.Column="1"
+                        Width="48" Height="48"
+                        Padding="0"
+                        CornerRadius="8"
+                        Margin="0,0,12,0"
+                        Background="Transparent"
+                        ToolTipService.ToolTip="{x:Bind Status, Mode=OneWay, Converter={StaticResource TaskStatusToTextConverter}}">
+                    <Grid CornerRadius="8"
+                          BorderThickness="2">
+                        <Grid.BorderBrush>
+                            <SolidColorBrush Color="{Binding DataContext.ProjectColor, ElementName=TasksListView, Converter={StaticResource HexToColorConverter}}"/>
+                        </Grid.BorderBrush>
+                        <Grid.Background>
+                            <SolidColorBrush Color="{Binding DataContext.ProjectColor, ElementName=TasksListView, Converter={StaticResource HexToColorConverter}}" 
+                                           Opacity="0.15"/>
+                        </Grid.Background>
+
+                        <FontIcon Glyph="{x:Bind Status, Mode=OneWay, Converter={StaticResource TaskStatusToIconConverter}}"
+                                  FontSize="24"
+                                  Style="{StaticResource ScaledFilledFontIconStyle}">
+                            <FontIcon.Foreground>
+                                <SolidColorBrush Color="{Binding DataContext.ProjectColor, ElementName=TasksListView, Converter={StaticResource HexToColorConverter}}"/>
+                            </FontIcon.Foreground>
+                        </FontIcon>
+                    </Grid>
+                </Border>
+
+                <!-- Column 2: Task Info -->
+                <Grid Grid.Column="2"
+                      Padding="0,8"
+                      Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Task Title -->
+                    <TextBlock Grid.Row="0"
+                               Text="{x:Bind Title}"
+                               Style="{StaticResource BodyStrongTextBlockStyle}"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <!-- Task Metadata -->
+                    <StackPanel Grid.Row="1" 
+                                Orientation="Horizontal" 
+                                Spacing="16">
+                        
+                        <!-- Task Type -->
+                        <TextBlock Opacity="0.6"
+                                   Visibility="{x:Bind TaskType, Converter={StaticResource NullToVisibilityConverter}}">
+                            <Run Text="Type:"/>
+                            <Run Text="{x:Bind TaskType.Name}"/>
+                        </TextBlock>
+
+                        <!-- Priority -->
+                        <TextBlock Opacity="0.6">
+                            <Run Text="Priority:"/>
+                            <Run Text="{x:Bind Priority, Converter={StaticResource TaskPriorityToTextConverter}}"/>
+                        </TextBlock>
+
+                        <!-- Due Date -->
+                        <TextBlock Opacity="0.6"
+                                   Visibility="{x:Bind DueDate, Converter={StaticResource NullToVisibilityConverter}}">
+                            <Run Text="Due:"/>
+                            <Run Text="{x:Bind DueDate, Converter={StaticResource DateTimeToStringConverter}}"/>
+                        </TextBlock>
+
+                        <!-- Start Date -->
+                        <TextBlock Opacity="0.6"
+                                   Visibility="{x:Bind StartDate, Converter={StaticResource NullToVisibilityConverter}}">
+                            <Run Text="Start:"/>
+                            <Run Text="{x:Bind StartDate, Converter={StaticResource DateTimeToStringConverter}}"/>
+                        </TextBlock>
+
+                        <!-- Milestone -->
+                        <StackPanel Orientation="Horizontal" 
+                                    Spacing="4"
+                                    Visibility="{x:Bind Milestone, Converter={StaticResource NullToVisibilityConverter}}">
+                            <FontIcon Glyph="&#xeb91;" 
+                                      FontSize="16"
+                                      VerticalAlignment="Center">
+                                <FontIcon.Foreground>
+                                    <SolidColorBrush Color="{x:Bind Milestone.Color, Converter={StaticResource HexToColorConverter}}"/>
+                                </FontIcon.Foreground>
+                            </FontIcon>
+                            <TextBlock Text="{x:Bind Milestone.Name}" 
+                                       Opacity="0.6"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Title -->
+        <TextBlock Grid.Row="0" 
+                   Margin="36,36,36,0"
+                   VerticalAlignment="Stretch" 
+                   MaxWidth="1200"
+                   Style="{StaticResource TitleTextBlockStyle}" 
+                   Text="{x:Bind ViewModel.Title, Mode=OneWay}"/>
+
+        <!-- Row 1: Main Content -->
+        <ScrollViewer Grid.Row="1"
+                      HorizontalScrollBarVisibility="Disabled" 
+                      VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid MaxWidth="1200" Margin="24" RowSpacing="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Search + Buttons -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Sort + Filter + Actions -->
+                        <RowDefinition Height="*"/>
+                        <!-- Content -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Row 0: Search Bar + Milestones Button + New Task Button -->
+                    <Grid Grid.Row="0" ColumnSpacing="12"
+                          Visibility="{x:Bind ViewModel.TasksExistInDatabase, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <AutoSuggestBox Grid.Column="0"
+                                        PlaceholderText="Search tasks..."
+                                        QueryIcon="Find"
+                                        Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        VerticalAlignment="Center"/>
+
+                        <Button Grid.Column="1"
+                                Content="Milestones"
+                                Command="{x:Bind ViewModel.NavigateToMilestonesCommand}"/>
+
+                        <Button Grid.Column="2"
+                                Content="New Task"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Command="{x:Bind ViewModel.CreateTaskCommand}">
+                            <Button.KeyboardAccelerators>
+                                <KeyboardAccelerator Modifiers="Control" Key="N"/>
+                            </Button.KeyboardAccelerators>
+                        </Button>
+                    </Grid>
+
+                    <!-- Row 1: Sort + View + Task Count + More -->
+                    <Grid Grid.Row="1"
+                          Visibility="{x:Bind ViewModel.TasksExistInDatabase, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Sort Dropdown -->
+                        <DropDownButton Grid.Column="0">
+                            <DropDownButton.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xe164;" Style="{StaticResource ScaledOutlineIconBlockStyle}"/>
+                                    <TextBlock Text="Sort" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DropDownButton.Content>
+                            <DropDownButton.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                    <ToggleMenuFlyoutItem Text="Name" 
+                                                          IsChecked="{x:Bind ViewModel.SortByName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Priority" 
+                                                          IsChecked="{x:Bind ViewModel.SortByPriority, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Created Date" 
+                                                          IsChecked="{x:Bind ViewModel.SortByCreatedDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Updated Date" 
+                                                          IsChecked="{x:Bind ViewModel.SortByUpdatedDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Due Date" 
+                                                          IsChecked="{x:Bind ViewModel.SortByDueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Start Date" 
+                                                          IsChecked="{x:Bind ViewModel.SortByStartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <MenuFlyoutSeparator/>
+                                    <ToggleMenuFlyoutItem Text="Ascending" 
+                                                          IsChecked="{x:Bind ViewModel.SortAscending, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Descending" 
+                                                          IsChecked="{x:Bind ViewModel.SortDescending, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+
+                        <!-- View Dropdown (Status Filters) -->
+                        <DropDownButton Grid.Column="1" Margin="8,0,0,0">
+                            <DropDownButton.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xe8ee;" Style="{StaticResource ScaledOutlineIconBlockStyle}"/>
+                                    <TextBlock Text="View" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DropDownButton.Content>
+                            <DropDownButton.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                    <ToggleMenuFlyoutItem Text="Not Started"
+                                                          IsChecked="{x:Bind ViewModel.ShowNotStarted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="In Progress"
+                                                          IsChecked="{x:Bind ViewModel.ShowInProgress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Completed"
+                                                          IsChecked="{x:Bind ViewModel.ShowCompleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <ToggleMenuFlyoutItem Text="Cancelled"
+                                                          IsChecked="{x:Bind ViewModel.ShowCancelled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+
+                        <!-- Task Count -->
+                        <TextBlock Grid.Column="2"
+                                   Text="{x:Bind ViewModel.TaskCount, Mode=OneWay}"
+                                   VerticalAlignment="Center"
+                                   Margin="16,0,0,0"
+                                   Opacity="0.6"/>
+
+                        <!-- More Dropdown (Project Actions) -->
+                        <DropDownButton Grid.Column="3">
+                            <DropDownButton.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xe5d3;" Style="{StaticResource ScaledOutlineIconBlockStyle}"/>
+                                    <TextBlock Text="More" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DropDownButton.Content>
+                            <DropDownButton.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuFlyoutItem Text="Edit Project" 
+                                                    Icon="Edit"
+                                                    Command="{x:Bind ViewModel.EditProjectCommand}"/>
+                                    <MenuFlyoutItem Text="Archive Project"
+                                                    Command="{x:Bind ViewModel.ArchiveProjectCommand}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8f4;" Style="{StaticResource ScaledOutlineFontIconStyle}"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="Delete Project" 
+                                                    Icon="Delete"
+                                                    Command="{x:Bind ViewModel.DeleteProjectCommand}"/>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                    </Grid>
+
+                    <!-- Row 2: Tasks Content -->
+                    <Grid Grid.Row="2">
+                        <!-- Loading Indicator -->
+                        <ProgressRing IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"
+                                      Width="48" Height="48"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Visibility="{x:Bind ViewModel.IsRefreshing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                        <!-- Empty State: No Tasks -->
+                        <StackPanel HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    Spacing="16"
+                                    Visibility="{x:Bind ViewModel.ShowCreateFirstTaskPrompt, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <FontIcon Glyph="&#xE73A;" FontSize="72" Opacity="0.3"/>
+                            <TextBlock Text="No tasks found" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Opacity="0.6"/>
+                            <TextBlock Text="Create your first task to get started"                                   
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Opacity="0.6"/>
+                            <Button Content="Create Task"
+                                    Command="{x:Bind ViewModel.CreateTaskCommand}"
+                                    HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- No Results State -->
+                        <StackPanel HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    Spacing="16"
+                                    Visibility="{x:Bind ViewModel.ShowNoSearchResultsMessage, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <FontIcon Glyph="&#xE721;" FontSize="72" Opacity="0.3"/>
+                            <TextBlock Text="No matching tasks" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Opacity="0.6"/>
+                            <TextBlock HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Opacity="0.6">
+                                <Run Text="Try adjusting your search or filters"/>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <!-- Tasks ListView -->
+                        <ListView x:Name="TasksListView" 
+                                  ItemsSource="{x:Bind ViewModel.Tasks, Mode=OneWay}"
+                                  ItemTemplate="{StaticResource TaskItemTemplate}"
+                                  SelectedItem="{x:Bind ViewModel.SelectedTask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectionMode="Single"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="TasksListView_ItemClick"
+                                  RightTapped="TasksListView_RightTapped"
+                                  Visibility="{x:Bind ViewModel.TasksMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem" BasedOn="{StaticResource OutlineListViewItemStyle}">
+                                    <Setter Property="Padding" Value="3,0,0,0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Margin" Value="0,0,0,1"/>
+                                    <Setter Property="CornerRadius" Value="11"/>
+                                    <Setter Property="Height" Value="Auto"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <ListView.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Open" 
+                                                    Icon="OpenFile"
+                                                    Command="{x:Bind ViewModel.OpenTaskCommand}"
+                                                    CommandParameter="{x:Bind ViewModel.SelectedTask, Mode=OneWay}">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Key="Enter"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Edit" 
+                                                    Icon="Edit"
+                                                    Command="{x:Bind ViewModel.EditTaskCommand}"
+                                                    CommandParameter="{x:Bind ViewModel.SelectedTask, Mode=OneWay}">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Modifiers="Control" Key="E"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutSubItem Text="Change Status">
+                                        <MenuFlyoutItem Text="Not Started" 
+                                                        Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
+                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                        <MenuFlyoutItem Text="In Progress" 
+                                                        Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
+                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                        <MenuFlyoutItem Text="Completed" 
+                                                        Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
+                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                        <MenuFlyoutItem Text="Cancelled" 
+                                                        Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
+                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                    </MenuFlyoutSubItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="Delete" 
+                                                    Icon="Delete"
+                                                    Command="{x:Bind ViewModel.DeleteTaskCommand}"
+                                                    CommandParameter="{x:Bind ViewModel.SelectedTask, Mode=OneWay}">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Key="Delete"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </ListView.ContextFlyout>
+                        </ListView>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>
