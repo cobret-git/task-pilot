@@ -8,16 +8,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:entities="using:TaskPilot.Core.Components.Entities"
     xmlns:viewmodel="using:TaskPilot.Core.ViewModel"
+    xmlns:controls="using:TaskPilot.Desktop.WinApp.Controls"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewmodel:ProjectsBrowserViewModel}">
 
     <Page.Resources>
-        <!-- Project Item Template -->
+        <!-- Project Item Template for ReorderableItemsControl -->
         <DataTemplate x:Key="ProjectItemTemplate" x:DataType="entities:Project">
             <Grid Padding="0" 
                   Background="Transparent"
                   PointerEntered="ProjectItem_PointerEntered"
-                  PointerExited="ProjectItem_PointerExited">
+                  PointerExited="ProjectItem_PointerExited"
+                  Margin="0,0,0,4"
+                  CornerRadius="8"
+                  BorderThickness="1"
+                  BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <!-- Icon -->
@@ -90,16 +95,14 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Section 3: Drag Handle (visible only when CanReorderProjects) -->
+                <!-- Section 3: Drag Handle (using attached property) -->
                 <Border Grid.Column="2"
                         x:Name="DragHandle"
                         Width="48" Height="48"
                         Padding="0"
                         Background="Transparent"
-                        Visibility="{Binding DataContext.CanReorderProjects, ElementName=ProjectsListView, Converter={StaticResource BoolToVisibilityConverter}}"
-                        PointerEntered="DragHandle_PointerEntered"
-                        PointerExited="DragHandle_PointerExited"
-                        PointerPressed="DragHandle_PointerPressed">
+                        Visibility="{Binding DataContext.CanReorder, ElementName=ProjectsListControl, Converter={StaticResource BoolToVisibilityConverter}}"
+                        controls:ReorderableItemsControl.IsDragHandle="True">
                     <FontIcon Glyph="&#xe25d;" 
                               FontSize="20"
                               Style="{StaticResource ScaledOutlineFontIconStyle}"
@@ -112,6 +115,22 @@
                         </FontIcon.RenderTransform>
                     </FontIcon>
                 </Border>
+
+                <!-- Click area for item selection -->
+                <Grid.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="Open" 
+                                        Icon="OpenFile"
+                                        Click="OpenProject_Click"/>
+                        <MenuFlyoutItem Text="Edit" 
+                                        Icon="Edit"
+                                        Click="EditProject_Click"/>
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="Delete" 
+                                        Icon="Delete"
+                                        Click="DeleteProject_Click"/>
+                    </MenuFlyout>
+                </Grid.ContextFlyout>
             </Grid>
         </DataTemplate>
     </Page.Resources>
@@ -206,7 +225,7 @@
                                 </MenuFlyout>
                             </DropDownButton.Flyout>
                         </DropDownButton>
-                        
+
                     </StackPanel>
 
                     <!-- Row 2: Projects List -->
@@ -256,65 +275,19 @@
                             </TextBlock>
                         </StackPanel>
 
-                        <!-- Projects ListView -->
-                        <ListView x:Name="ProjectsListView" 
-                                  ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
-                                  ItemTemplate="{StaticResource ProjectItemTemplate}"
-                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  SelectionMode="Single"
-                                  IsItemClickEnabled="True"
-                                  ItemClick="ListView_ItemClick"
-                                  RightTapped="ListView_RightTapped"
-                                  Visibility="{x:Bind ViewModel.ProjectsMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                  AllowDrop="True"
-                                  DragOver="ProjectsListView_DragOver"
-                                  Drop="ProjectsListView_Drop">
-
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem" BasedOn="{StaticResource OutlineListViewItemStyle}">
-                                    <Setter Property="Padding" Value="3,0,0,0"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="Margin" Value="0,0,0,1"/>
-                                    <Setter Property="CornerRadius" Value="11"/>
-                                    <Setter Property="Height" Value="Auto"/>
-                                </Style>
-                            </ListView.ItemContainerStyle>
-
-                            <ListView.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem Text="Open" 
-                                                    Icon="OpenFile"
-                                                    Command="{x:Bind ViewModel.OpenProjectCommand}"
-                                                    CommandParameter="{x:Bind ViewModel.SelectedItem, Mode=OneWay}">
-                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                            <KeyboardAccelerator Key="Enter"/>
-                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Edit" 
-                                                    Icon="Edit"
-                                                    Command="{x:Bind ViewModel.EditProjectCommand}"
-                                                    CommandParameter="{x:Bind ViewModel.SelectedItem, Mode=OneWay}">
-                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                            <KeyboardAccelerator Modifiers="Control" Key="E"/>
-                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem Text="Delete" 
-                                                    Icon="Delete"
-                                                    Command="{x:Bind ViewModel.DeleteProjectCommand}"
-                                                    CommandParameter="{x:Bind ViewModel.SelectedItem, Mode=OneWay}">
-                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                            <KeyboardAccelerator Key="Delete"/>
-                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                    </MenuFlyoutItem>
-                                </MenuFlyout>
-                            </ListView.ContextFlyout>
-                        </ListView>
+                        <!-- Projects ReorderableItemsControl -->
+                        <controls:ReorderableItemsControl 
+                            x:Name="ProjectsListControl"
+                            ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
+                            ItemTemplate="{StaticResource ProjectItemTemplate}"
+                            ReorderHandler="{x:Bind ViewModel}"
+                            CanReorder="{x:Bind ViewModel.CanReorder, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.ProjectsMatchCurrentFilter, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                            ReorderCompleted="ProjectsListControl_ReorderCompleted"/>
                     </Grid>
                 </Grid>
             </Grid>
-            
+
         </ScrollViewer>
     </Grid>
 </Page>

@@ -33,6 +33,7 @@
     <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-SemiBold.ttf" />
     <None Remove="Assets\Fonts\MaterialSymbolsRounded_Filled-Thin.ttf" />
     <None Remove="Assets\Styles.xaml" />
+    <None Remove="Controls\ReorderableItemsControl.xaml" />
     <None Remove="Dialogs\ProjectFormDialog.xaml" />
     <None Remove="Pages\ProjectFormPage.xaml" />
     <None Remove="Pages\ProjectsBrowser.xaml" />
@@ -112,6 +113,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Controls\ReorderableItemsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Assets\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -147,8 +153,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.92.2025</AssemblyVersion>
-    <FileVersion>1.0.92.2025</FileVersion>
+    <AssemblyVersion>1.0.95.2025</AssemblyVersion>
+    <FileVersion>1.0.95.2025</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>

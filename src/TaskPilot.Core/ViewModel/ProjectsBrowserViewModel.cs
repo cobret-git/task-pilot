@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
+using System.Collections;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using TaskPilot.Core.Components.Contracts;
 using TaskPilot.Core.Components.Data;
 using TaskPilot.Core.Components.Entities;
 using TaskPilot.Core.Services;
@@ -10,8 +15,9 @@ namespace TaskPilot.Core.ViewModel
     /// <summary>
     /// ViewModel for browsing and managing projects.
     /// Displays all available projects with create, edit, and delete operations.
+    /// Implements IReorderHandler for drag-and-drop reordering support.
     /// </summary>
-    public partial class ProjectsBrowserViewModel : ObservablePageViewModelBase
+    public partial class ProjectsBrowserViewModel : ObservablePageViewModelBase, IReorderHandler<Project>
     {
         #region Fields
         private readonly ITaskPilotDataService _dataService;
@@ -287,7 +293,72 @@ namespace TaskPilot.Core.ViewModel
         /// </summary>
         public bool ShowNoSearchResultsMessage => ProjectsExistInDatabase && !ProjectsMatchCurrentFilter;
 
-        public bool CanReorderProjects => SortBy == ProjectSortBy.SortOrder;
+        #endregion
+
+        #region IReorderHandler Implementation
+
+        /// <summary>
+        /// Gets whether reordering is enabled. Only available when sorted by SortOrder.
+        /// </summary>
+        public bool CanReorder => SortBy == ProjectSortBy.SortOrder && !IsBusy;
+
+        /// <summary>
+        /// Gets the items collection for reordering.
+        /// </summary>
+        IList IReorderHandler.Items => Projects;
+
+        /// <summary>
+        /// Non-generic implementation for IReorderHandler.
+        /// </summary>
+        Task IReorderHandler.OnReorderCompletedAsync(object item, int oldIndex, int newIndex)
+        {
+            if (item is Project project)
+            {
+                return OnReorderCompletedAsync(project, oldIndex, newIndex);
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Called when a reorder operation completes. Persists the new order to the database.
+        /// </summary>
+        public async Task OnReorderCompletedAsync(Project item, int oldIndex, int newIndex)
+        {
+            if (oldIndex == newIndex) return;
+
+            try
+            {
+                // Determine range to update
+                int startIndex = Math.Min(oldIndex, newIndex);
+                int endIndex = Math.Max(oldIndex, newIndex);
+
+                // Update SortOrder for affected projects
+                for (int i = startIndex; i <= endIndex && i < Projects.Count; i++)
+                {
+                    Projects[i].SortOrder = i;
+                    var updateResult = await _dataService.UpdateProjectAsync(Projects[i]);
+
+                    if (!updateResult.IsSuccess)
+                    {
+                        Serilog.Log.Warning("Failed to update SortOrder for project {ProjectId}: {Error}",
+                            Projects[i].Id, updateResult.ErrorMessage);
+                    }
+                }
+
+                Serilog.Log.Information("Project reordered: {ProjectName} from index {OldIndex} to {NewIndex}",
+                    item.Name, oldIndex, newIndex);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "Error persisting reorder");
+                await _dialogService.ShowErrorAsync(
+                    "Reorder Failed",
+                    "Failed to save the new order. Please try again.");
+
+                // Refresh to restore correct order
+                await RefreshProjectsAsync();
+            }
+        }
 
         #endregion
 
@@ -520,47 +591,6 @@ namespace TaskPilot.Core.ViewModel
         }
 
         /// <summary>
-        /// Reorders a project by moving it from oldIndex to newIndex and updates the database.
-        /// </summary>
-        public async Task ReorderProjectAsync(Project project, int oldIndex, int newIndex)
-        {
-            if (project == null || oldIndex == newIndex || oldIndex < 0 || newIndex < 0)
-                return;
-
-            try
-            {
-                IsBusy = true;
-
-                // Move in ObservableCollection
-                _dispatcherService.Run(() =>
-                {
-                    Projects.RemoveAt(oldIndex);
-                    Projects.Insert(newIndex, project);
-                });
-
-                // Update SortOrder for affected projects
-                await UpdateSortOrdersAfterReorderAsync(oldIndex, newIndex);
-
-                Serilog.Log.Information("Project reordered: {ProjectName} from index {OldIndex} to {NewIndex}",
-                    project.Name, oldIndex, newIndex);
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Error(ex, "Error reordering project");
-                await _dialogService.ShowErrorAsync(
-                    "Reorder Failed",
-                    "Failed to reorder the project. Please try again.");
-
-                // Refresh to restore correct order
-                await RefreshProjectsAsync();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        /// <summary>
         /// Toggles the sort order between ascending and descending.
         /// </summary>
         [RelayCommand]
@@ -596,7 +626,7 @@ namespace TaskPilot.Core.ViewModel
 
         private void OnSortByChanged(ProjectSortBy value)
         {
-            OnPropertyChanged(nameof(CanReorderProjects));
+            OnPropertyChanged(nameof(CanReorder));
         }
         #endregion
 
@@ -659,6 +689,7 @@ namespace TaskPilot.Core.ViewModel
                 OnPropertyChanged(nameof(ProjectsMatchCurrentFilter));
                 OnPropertyChanged(nameof(ShowCreateFirstProjectPrompt));
                 OnPropertyChanged(nameof(ShowNoSearchResultsMessage));
+                OnPropertyChanged(nameof(CanReorder));
             });
         }
 
@@ -675,29 +706,6 @@ namespace TaskPilot.Core.ViewModel
                 EditProjectCommand.NotifyCanExecuteChanged();
                 DeleteProjectCommand.NotifyCanExecuteChanged();
             });
-        }
-
-        /// <summary>
-        /// Updates SortOrder values in the database after a reorder operation.
-        /// </summary>
-        private async Task UpdateSortOrdersAfterReorderAsync(int oldIndex, int newIndex)
-        {
-            // Determine range to update
-            int startIndex = Math.Min(oldIndex, newIndex);
-            int endIndex = Math.Max(oldIndex, newIndex);
-
-            // Update SortOrder for affected projects
-            for (int i = startIndex; i <= endIndex && i < Projects.Count; i++)
-            {
-                Projects[i].SortOrder = i;
-                var updateResult = await _dataService.UpdateProjectAsync(Projects[i]);
-
-                if (!updateResult.IsSuccess)
-                {
-                    Serilog.Log.Warning("Failed to update SortOrder for project {ProjectId}: {Error}",
-                        Projects[i].Id, updateResult.ErrorMessage);
-                }
-            }
         }
         #endregion
 
