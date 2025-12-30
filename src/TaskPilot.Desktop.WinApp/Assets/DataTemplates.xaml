@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:entities="using:TaskPilot.Core.Components.Entities">
+    <DataTemplate x:Key="ComboboxProjectItemTemplate">
+        <StackPanel Orientation="Horizontal">
+            <FontIcon Glyph="&#xe2c7;"
+                      Style="{StaticResource ScaledFilledFontIconStyle}"
+                      FontSize="24">
+                <FontIcon.Foreground>
+                    <SolidColorBrush Color="{Binding Color, Mode=OneTime, Converter={StaticResource HexToColorConverter}}"/>
+                </FontIcon.Foreground>
+            </FontIcon>
+            <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ComboboxMilestoneItemTemplate">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal">
+                <Viewbox Width="24" Height="24">
+                    <Path Data="M7.293.707A1 1 0 0 0 7 1.414V4H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h5v6h2v-6h3.532a1 1 0 0 0 .768-.36l1.933-2.32a.5.5 0 0 0 0-.64L13.3 4.36a1 1 0 0 0-.768-.36H9V1.414A1 1 0 0 0 7.293.707">
+                        <Path.Fill>
+                            <SolidColorBrush Color="{Binding Color, Mode=OneTime, Converter={StaticResource HexToColorConverter}}"/>
+                        </Path.Fill>
+                    </Path>
+                </Viewbox>
+                <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ComboboxTaskTypeItemTemplate">
+        <StackPanel Orientation="Horizontal">
+            <FontIcon Glyph="&#xEA3B;" FontSize="24">
+                <FontIcon.Foreground>
+                    <SolidColorBrush Color="{Binding Color, Mode=OneTime, Converter={StaticResource HexToColorConverter}}"/>
+                </FontIcon.Foreground>
+            </FontIcon>
+            <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ComboboxPriorityItemTemplate">
+        <TextBlock Text="{Binding Converter={StaticResource TaskPriorityToTextConverter}}"/>
+    </DataTemplate>
+</ResourceDictionary>

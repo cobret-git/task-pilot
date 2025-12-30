@@ -14,10 +14,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\Converters.xaml" />
+    <Content Remove="Assets\DataTemplates.xaml" />
     <Content Remove="Assets\Logo\app_icon.svg" />
     <Content Remove="Assets\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\Converters.xaml" />
+    <None Remove="Assets\DataTemplates.xaml" />
     <None Remove="Assets\Fonts\MaterialSymbolsRounded-Bold.ttf" />
     <None Remove="Assets\Fonts\MaterialSymbolsRounded-ExtraLight.ttf" />
     <None Remove="Assets\Fonts\MaterialSymbolsRounded-Light.ttf" />
@@ -144,6 +148,16 @@
   <ItemGroup>
     <Folder Include="Controls\" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Update="Assets\Converters.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Assets\DataTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -160,8 +174,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.114.2025</AssemblyVersion>
-    <FileVersion>1.0.114.2025</FileVersion>
+    <AssemblyVersion>1.0.122.2025</AssemblyVersion>
+    <FileVersion>1.0.122.2025</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>

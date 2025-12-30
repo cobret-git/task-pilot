@@ -73,7 +73,7 @@
                                   HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding Projects, Mode=OneWay}"
                                   SelectedItem="{Binding SelectedProject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  DisplayMemberPath="Name"/>
+                                  ItemTemplate="{StaticResource ComboboxProjectItemTemplate}"/>
 
                         <Button Grid.Column="1"
                                 Content="&#xE711;"
@@ -100,7 +100,7 @@
                                   HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding Milestones, Mode=OneWay}"
                                   SelectedItem="{Binding SelectedMilestone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  DisplayMemberPath="Name"/>
+                                  ItemTemplate="{StaticResource ComboboxMilestoneItemTemplate}"/>
 
                         <Button Grid.Column="1"
                                 Content="&#xE711;"
@@ -127,7 +127,7 @@
                                   HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding TaskTypes, Mode=OneWay}"
                                   SelectedItem="{Binding SelectedTaskType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  DisplayMemberPath="Name"/>
+                                  ItemTemplate="{StaticResource ComboboxTaskTypeItemTemplate}"/>
 
                         <Button Grid.Column="1"
                                 Content="&#xE711;"
@@ -146,13 +146,8 @@
                               Header="Priority"
                               HorizontalAlignment="Stretch"
                               ItemsSource="{Binding Priorities, Mode=OneWay}"
-                              SelectedItem="{Binding SelectedPriority, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="data:TaskPriority">
-                                <TextBlock Text="{Binding Converter={StaticResource TaskPriorityToTextConverter}}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                              SelectedItem="{Binding SelectedPriority, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              ItemTemplate="{StaticResource ComboboxPriorityItemTemplate}"/>
 
                     <!-- Due Date and Time Pickers with Clear Button -->
                     <Grid Grid.Column="0" Grid.Row="6">

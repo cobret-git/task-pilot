@@ -205,6 +205,10 @@ namespace TaskPilot.Core.ViewModel
                 {
                     navResult = await _navigationService.NavigateToAsync(new ProjectPageRequest(SelectedProject));
                 }
+                else
+                {
+                    navResult = await _navigationService.NavigateToAsync(new ProjectsBrowserPageRequest());
+                }
                 if (navResult == null || !navResult.Success)
                 {
                     await _dialogService.ShowErrorAsync("Navigation Error", "Error at navigating.");
