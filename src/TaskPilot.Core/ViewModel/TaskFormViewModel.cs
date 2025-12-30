@@ -50,7 +50,7 @@ namespace TaskPilot.Core.ViewModel
                 if (_data.Task.Title == value) return;
                 _data.Task.Title = value;
                 OnPropertyChanged();
-                ValidateTaskName();
+                NotifyCanExecuteChanged();
             }
         }
 
@@ -75,6 +75,7 @@ namespace TaskPilot.Core.ViewModel
                 _data.Task.ProjectId = value?.Id;
                 OnPropertyChanged();
                 OnProjectChanged(oldProject, value);
+                NotifyCanExecuteChanged();
             }
         }
 
@@ -100,6 +101,7 @@ namespace TaskPilot.Core.ViewModel
                 _selectedTaskType = value;
                 _data.Task.TaskTypeId = value?.Id;
                 OnPropertyChanged();
+                NotifyCanExecuteChanged();
             }
         }
 
@@ -170,9 +172,21 @@ namespace TaskPilot.Core.ViewModel
                     return;
                 }
 
+                // TODO: Add the navigation to the TaskPage;
                 // Navigate back to Projects Browser
-                var navResult = await _navigationService.NavigateToAsync(new ProjectsBrowserPageRequest());
-                if (!navResult.Success)
+
+                NavigationResult? navResult = null; 
+                
+                if (SelectedMilestone != null)
+                {
+                    // TODO: Add the navigation to the Milestone Page;
+                    throw new NotImplementedException();
+                }
+                else if (SelectedProject != null)
+                {
+                    navResult = await _navigationService.NavigateToAsync(new ProjectPageRequest(SelectedProject));
+                }
+                if (navResult == null || !navResult.Success)
                 {
                     await _dialogService.ShowErrorAsync("Navigation Error", "Error at navigating.");
                 }
@@ -190,9 +204,21 @@ namespace TaskPilot.Core.ViewModel
             try
             {
                 _data.IsChangesSaved = false;
-                var navResult = await _navigationService.NavigateToAsync(new ProjectsBrowserPageRequest());
-                if (!navResult.Success)
+                NavigationResult? navResult = null;
+
+                if (SelectedMilestone != null)
+                {
+                    // TODO: Add the navigation to the Milestone Page;
+                    throw new NotImplementedException();
+                }
+                else if (SelectedProject != null)
+                {
+                    navResult = await _navigationService.NavigateToAsync(new ProjectPageRequest(SelectedProject));
+                }
+                if (navResult == null || !navResult.Success)
+                {
                     await _dialogService.ShowErrorAsync("Navigation Error", "Error at navigating.");
+                }
             }
             catch (Exception ex)
             {
@@ -309,24 +335,6 @@ namespace TaskPilot.Core.ViewModel
             }
         }
 
-        private void ValidateTaskName()
-        {
-            if (string.IsNullOrWhiteSpace(TaskTitle))
-            {
-                _dispatcherService.Run(() =>
-                {
-                    Popups.Clear();
-                    Popups.Add(new PopupData(PopupType.Warning, "Warning", "Project name cannot be null."));
-                });
-            }
-            else _dispatcherService.Run(() =>
-            {
-                Popups.Clear();
-                Popups.Add(new PopupData(PopupType.Success, "Success", "Everything looks good. You can continue."));
-            });
-            NotifyCanExecuteChanged();
-        }
-
         private void OnProjectChanged(Project? oldProject, Project? newProject)
         {
             // If milestone is selected and it doesn't belong to new project, clear it
@@ -343,9 +351,36 @@ namespace TaskPilot.Core.ViewModel
 
             // Reload milestones for new project
             _ = LoadMilestonesAsync();
-            ValidateTaskName();
+            NotifyCanExecuteChanged();
         }
 
+        private bool ValidateEnteredData()
+        {
+            var popupsList = new List<PopupData>();
+            var result = false;
+
+            if (string.IsNullOrWhiteSpace(TaskTitle))
+                popupsList.Add(new PopupData(PopupType.Warning, "Warning", "Task title cannot be null."));
+            if (SelectedMilestone != null && SelectedProject == null)
+                popupsList.Add(new PopupData(PopupType.Warning, "Warning", "When milestone is provided project must also be set."));
+            if (SelectedTaskType == null)
+                popupsList.Add(new PopupData(PopupType.Warning, "Warning", "Task type cannot be null."));
+
+            if (popupsList.Count == 0)
+            {
+                popupsList.Add(new PopupData(PopupType.Success, "Success", "Everything looks good. You can continue."));
+                result = true;
+            }
+
+            _dispatcherService.Run(() =>
+            {
+                Popups.Clear();
+                foreach (var popup in popupsList)
+                    Popups.Add(popup);
+            });
+
+            return result;
+        }
         #endregion
 
         #region Handlers
@@ -361,10 +396,10 @@ namespace TaskPilot.Core.ViewModel
 
             // Set selected values from context
             if (value.ContextProject != null)
-                SelectedProject = value.ContextProject;
+                SelectedProject = Projects.First(x => x.Id == value.ContextProject.Id);
 
             if (value.ContextMilestone != null)
-                SelectedMilestone = value.ContextMilestone;
+                SelectedMilestone = Milestones.First(x => x.Id == value.ContextMilestone.Id);
 
             // For edit mode, load existing values
             if (value.Action == FormDialogAction.Edit)
@@ -410,20 +445,13 @@ namespace TaskPilot.Core.ViewModel
             OnPropertyChanged(nameof(TaskTitle));
             OnPropertyChanged(nameof(Description));
         }
+        
         #endregion
 
         #region CanExecute
         private bool CanSaveChanges()
         {
-            // Title is required
-            if (string.IsNullOrWhiteSpace(TaskTitle))
-                return false;
-
-            // If milestone is set, project must also be set
-            if (SelectedMilestone != null && SelectedProject == null)
-                return false;
-
-            return true;
+            return ValidateEnteredData();
         }
         #endregion
 
