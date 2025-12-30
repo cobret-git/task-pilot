@@ -117,27 +117,17 @@ namespace TaskPilot.Core.ViewModel
             }
         }
 
-        public DateTimeOffset? DueDate
-        {
-            get => _dueDate;
-            set
-            {
-                if (_dueDate == value) return;
-                _dueDate = value;
-                OnPropertyChanged();
-                UpdateDueDateFromPickers();
-            }
-        }
+        private DateTime? _dueDateTime;
 
-        public TimeSpan? DueTime
+        public DateTime? DueDateTime
         {
-            get => _dueTime;
+            get => _dueDateTime;
             set
             {
-                if (_dueTime == value) return;
-                _dueTime = value;
+                if (_dueDateTime == value) return;
+                _dueDateTime = value;
+                _data.Task.DueDate = value;
                 OnPropertyChanged();
-                UpdateDueDateFromPickers();
             }
         }
 
@@ -248,8 +238,7 @@ namespace TaskPilot.Core.ViewModel
         [RelayCommand]
         private void ClearDueDate()
         {
-            DueDate = null;
-            DueTime = null;
+            DueDateTime = null;
             _data.Task.DueDate = null;
         }
 
@@ -320,14 +309,9 @@ namespace TaskPilot.Core.ViewModel
 
         private void UpdateDueDateFromPickers()
         {
-            if (DueDate.HasValue)
+            if (DueDateTime.HasValue)
             {
-                var dateTime = DueDate.Value.DateTime;
-                if (DueTime.HasValue)
-                {
-                    dateTime = dateTime.Date.Add(DueTime.Value);
-                }
-                _data.Task.DueDate = dateTime;
+                _data.Task.DueDate = DueDateTime;
             }
             else
             {
@@ -437,8 +421,7 @@ namespace TaskPilot.Core.ViewModel
                 // Set due date and time
                 if (value.Task.DueDate.HasValue)
                 {
-                    DueDate = new DateTimeOffset(value.Task.DueDate.Value);
-                    DueTime = value.Task.DueDate.Value.TimeOfDay;
+                    DueDateTime = value.Task.DueDate.Value;
                 }
             }
 

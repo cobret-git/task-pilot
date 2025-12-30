@@ -26,6 +26,7 @@
             <conv:TaskStatusToTextConverter x:Key="TaskStatusToTextConverter"/>
             <conv:TaskStatusToCheckboxConverter x:Key="TaskStatusToCheckboxConverter"/>
             <conv:TaskPriorityToTextConverter x:Key="TaskPriorityToTextConverter"/>
+            <conv:NullToInvertedVisibilityConverter x:Key="NullToInvertedVisibilityConverter"/>
 
             <FontFamily x:Key="MaterialOutlineBoldIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-Bold.ttf#Material Symbols Rounded</FontFamily>
             <FontFamily x:Key="MaterialOutlineExtraLightIconFontFamily">ms-appx:///Assets/Fonts/MaterialSymbolsRounded-ExtraLight.ttf#Material Symbols Rounded</FontFamily>

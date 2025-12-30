@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="using:TaskPilot.Core.ViewModel"
+    xmlns:controls="using:TaskPilot.Desktop.WinApp.Controls"    
     xmlns:data="using:TaskPilot.Core.Components.Data"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewmodel:TaskFormViewModel}">
@@ -157,33 +158,22 @@
                     <Grid Grid.Column="0" Grid.Row="6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <CalendarDatePicker Grid.Column="0"
-                                            Header="Due Date"
-                                            PlaceholderText="Select date"
-                                            HorizontalAlignment="Stretch"
-                                            Margin="0,0,8,0"
-                                            Date="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <controls:DateTimePickerControl Grid.Column="0"
+                                                        Header="Due Date Time"
+                                                        PlaceholderText="Select date and time"
+                                                        SelectedDateTime="{Binding DueDateTime, Mode=TwoWay}"/>
 
-                        <TimePicker Grid.Column="1"
-                                    Header="Due Time"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="8,0,0,0"
-                                    Time="{Binding DueTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <Button Grid.Column="2"
+                        <Button Grid.Column="1"
                                 Content="&#xE711;"
+                                VerticalAlignment="Stretch"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                Margin="8,26,0,0"
-                                Padding="8"
-                                Width="32"
-                                Height="32"
+                                Margin="8,22,0,0"
                                 ToolTipService.ToolTip="Clear due date"
                                 Command="{Binding ClearDueDateCommand}"
-                                Visibility="{Binding DueDate, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                Visibility="{Binding DueDateTime, Converter={StaticResource NullToVisibilityConverter}}"/>
                     </Grid>
 
                     <!-- Review Panel (Right Side) -->
