@@ -15,7 +15,7 @@
     <Page.Resources>
         <!-- Task Item Template -->
         <DataTemplate x:Key="TaskItemTemplate" x:DataType="entities:TaskItem">
-            <Grid Padding="0" Background="Transparent">
+            <Grid Padding="12,0" Background="Transparent" ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <!-- Checkbox -->
@@ -27,8 +27,8 @@
 
                 <!-- Column 0: Checkbox -->
                 <CheckBox Grid.Column="0"
+                          MinWidth="24"
                           IsChecked="{x:Bind Status, Mode=OneWay, Converter={StaticResource TaskStatusToCheckboxConverter}}"
-                          Margin="0,0,12,0"
                           VerticalAlignment="Center"
                           Command="{Binding DataContext.ToggleCompletedCommand, ElementName=TasksListView}"
                           CommandParameter="{x:Bind}"/>
@@ -38,7 +38,7 @@
                         Width="48" Height="48"
                         Padding="0"
                         CornerRadius="8"
-                        Margin="0,0,12,0"
+                        Margin="0,0,0,0"
                         Background="Transparent"
                         ToolTipService.ToolTip="{x:Bind Status, Mode=OneWay, Converter={StaticResource TaskStatusToTextConverter}}">
                     <Grid CornerRadius="8"
@@ -52,8 +52,8 @@
                         </Grid.Background>
 
                         <FontIcon Glyph="{x:Bind Status, Mode=OneWay, Converter={StaticResource TaskStatusToIconConverter}}"
-                                  FontSize="24"
-                                  Style="{StaticResource ScaledFilledFontIconStyle}">
+                                  FontSize="24" Height="Auto"
+                                  Style="{StaticResource ScaledOutlineFontIconStyle}">
                             <FontIcon.Foreground>
                                 <SolidColorBrush Color="{Binding DataContext.ProjectColor, ElementName=TasksListView, Converter={StaticResource HexToColorConverter}}"/>
                             </FontIcon.Foreground>
@@ -379,13 +379,13 @@
                                                         CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
                                         <MenuFlyoutItem Text="In Progress" 
                                                         Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
-                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                                        CommandParameter="{x:Bind data:TaskStatus.InProgress}"/>
                                         <MenuFlyoutItem Text="Completed" 
                                                         Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
-                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                                        CommandParameter="{x:Bind data:TaskStatus.Completed}"/>
                                         <MenuFlyoutItem Text="Cancelled" 
                                                         Command="{x:Bind ViewModel.ChangeTaskStatusCommand}"
-                                                        CommandParameter="{x:Bind data:TaskStatus.NotStarted}"/>
+                                                        CommandParameter="{x:Bind data:TaskStatus.Cancelled}"/>
                                     </MenuFlyoutSubItem>
                                     <MenuFlyoutSeparator/>
                                     <MenuFlyoutItem Text="Delete" 
