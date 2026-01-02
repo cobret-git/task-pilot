@@ -69,6 +69,7 @@ namespace TaskPilot.Desktop.WinApp
             services.AddSingleton<IDialogService, DialogService>();
 
             services.AddTransient<ProjectsBrowserViewModel>();
+            services.AddTransient<TasksListControlViewModel>();
             services.AddTransient<ProjectFormViewModel>();
             services.AddTransient<ProjectPageViewModel>();
             services.AddTransient<TaskFormViewModel>();

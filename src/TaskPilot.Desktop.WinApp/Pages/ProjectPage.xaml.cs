@@ -28,7 +28,7 @@ namespace TaskPilot.Desktop.WinApp.Pages
         {
             if (e.ClickedItem is TaskItem task)
             {
-                await ViewModel.OpenTaskCommand.ExecuteAsync(task);
+                await ViewModel.TasksListViewModel.OpenTaskCommand.ExecuteAsync(task);
             }
         }
 
