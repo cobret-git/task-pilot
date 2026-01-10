@@ -65,6 +65,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DevWinUI.Controls" Version="9.9.2" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
   </ItemGroup>
@@ -174,8 +175,8 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyVersion>1.0.144.2026</AssemblyVersion>
-    <FileVersion>1.0.144.2026</FileVersion>
+    <AssemblyVersion>1.0.164.2026</AssemblyVersion>
+    <FileVersion>1.0.164.2026</FileVersion>
     <AssemblyName>TaskPilot</AssemblyName>
     <ApplicationIcon>Assets\Logo\app_icon.ico</ApplicationIcon>
   </PropertyGroup>

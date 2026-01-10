@@ -9,6 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="ms-appx:///DevWinUI.Controls/Themes/Generic.xaml" />
                 <ResourceDictionary Source="/Assets/Styles.xaml"/>
                 <ResourceDictionary Source="/Assets/Converters.xaml"/>
                 <ResourceDictionary Source="/Assets/DataTemplates.xaml"/>

@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Foundation;
 
 namespace TaskPilot.Desktop.WinApp.Controls;
 
@@ -7,11 +8,13 @@ public sealed partial class CollapsibleDescription : UserControl
 {
     private const double CollapsedHeight = 80;
     private bool _isLoaded;
+    private double _fullTextHeight;
 
     public CollapsibleDescription()
     {
         InitializeComponent();
         Loaded += OnLoaded;
+        SizeChanged += OnSizeChanged;
     }
 
     public static readonly DependencyProperty TextProperty =
@@ -32,7 +35,7 @@ public sealed partial class CollapsibleDescription : UserControl
         if (d is CollapsibleDescription control)
         {
             control.DescriptionText.Text = e.NewValue as string ?? string.Empty;
-            
+
             if (control._isLoaded)
             {
                 control.UpdateVisualState();
@@ -46,16 +49,24 @@ public sealed partial class CollapsibleDescription : UserControl
         UpdateVisualState();
     }
 
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_isLoaded && e.NewSize.Width != e.PreviousSize.Width)
+        {
+            UpdateVisualState();
+        }
+    }
+
     private void UpdateVisualState()
     {
-        // Force layout update to measure actual text height
-        DescriptionText.Measure(new Windows.Foundation.Size(
-            DescriptionContainer.ActualWidth > 0 ? DescriptionContainer.ActualWidth : RootGrid.ActualWidth, 
-            double.PositiveInfinity));
+        // Get available width
+        var availableWidth = RootGrid.ActualWidth > 0 ? RootGrid.ActualWidth : 400;
 
-        var textHeight = DescriptionText.DesiredSize.Height;
+        // Measure text to get full height
+        DescriptionText.Measure(new Size(availableWidth, double.PositiveInfinity));
+        _fullTextHeight = DescriptionText.DesiredSize.Height;
 
-        if (textHeight <= CollapsedHeight)
+        if (_fullTextHeight <= CollapsedHeight)
         {
             // Content is short enough to fit without expanding
             VisualStateManager.GoToState(this, "ShortContent", false);
@@ -75,6 +86,12 @@ public sealed partial class CollapsibleDescription : UserControl
 
     private void ShowMoreButton_Checked(object sender, RoutedEventArgs e)
     {
+        // Set target height for animation
+        if (_fullTextHeight > CollapsedHeight)
+        {
+            DescriptionContainer.MaxHeight = _fullTextHeight;
+        }
+
         VisualStateManager.GoToState(this, "Expanded", true);
     }
 
