@@ -35,11 +35,14 @@
                 <Grid MaxWidth="1200" Margin="24" RowSpacing="16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Row 0: Search Bar + Milestones Button + New Task Button -->
-                    <Grid Grid.Row="0" ColumnSpacing="12">
+                    <controls:CollapsibleDescription Grid.Row="0"
+                                                     Text="{x:Bind ViewModel.CurrentProject.Description, Mode=OneWay}"/>
+
+                    <Grid Grid.Row="1" ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -67,7 +70,7 @@
                     </Grid>
 
                     <!-- Tasks List Control -->
-                    <controls:TasksListControl Grid.Row="1" 
+                    <controls:TasksListControl Grid.Row="2" 
                                                DataContext="{x:Bind ViewModel.TasksListViewModel}"
                                                ShowProject="False"
                                                ShowMilestone="True"/>
