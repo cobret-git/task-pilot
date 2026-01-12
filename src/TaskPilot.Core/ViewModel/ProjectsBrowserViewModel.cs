@@ -621,10 +621,18 @@ namespace TaskPilot.Core.ViewModel
                 // Filter by search query
                 if (!string.IsNullOrWhiteSpace(SearchQuery))
                 {
-                    var query = SearchQuery.Trim().ToLowerInvariant();
+                    var query = SearchQuery.Trim();
+                    var words = query.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    
                     filtered = filtered.Where(p =>
-                        p.Name.ToLowerInvariant().Contains(query) ||
-                        (p.Description?.ToLowerInvariant().Contains(query) ?? false));
+                    {
+                        var searchableText = $"{p.Name} {p.Description}".ToLowerInvariant();
+                        
+                        // All words must match (AND logic)
+                        return words.All(word => 
+                            searchableText.Contains(word.ToLowerInvariant())
+                        );
+                    });
                 }
 
                 // Sort
